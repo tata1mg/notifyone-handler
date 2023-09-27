@@ -12,8 +12,7 @@ class PushHandler(AbstractHandler):
     CHANNEL = "push"
     HANDLER_CONFIG_KEY = "PUSH_HANDLER"
     PROVIDER_CLASS_MAPPING = {
-        PushGateways.FCM.value: FCMHandler,
-        PushGateways.APNS.value: APNSHandler,
+        PushGateways.FCM.value: FCMHandler
     }
 
     @classmethod
