@@ -8,7 +8,8 @@ from app.commons.logging import LogRecord
 from app.constants.channel_gateways import WhatsAppGateways
 from app.constants.constants import HTTPStatusCodes
 from app.service_clients.api_handler import APIClient
-from app.service_clients.callback_handler import CallbackHandler, CallbackLogger
+from app.service_clients.callback_handler import (CallbackHandler,
+                                                  CallbackLogger)
 from app.services.notifier import Notifier
 
 logger = logging.getLogger()
@@ -68,22 +69,13 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
             "bodyValues": list(template_data.get("body_values")),
         }
 
-        attachment_data = template_data.get("attachment_data")
+        files = template_data.get("files") or list()
 
-        if attachment_data and attachment_data.get("attachments"):
-            attachments = attachment_data.get("attachments", [])
+        if files:
             # NOTE only one file attachment is sent at time.
-            first_file_attachment = str(attachments[0])
-            filename = attachment_data.get("filename")
-            """
-            In case filename is not provided we will use default file name.
-            Example : attachments = ["https://abc/xyz.pdf"]
-            Then default filename will be file.pdf
-            """
-            if not filename:
-                file_extension = os.path.splitext(first_file_attachment)[1]
-                filename = "file" + file_extension
-
+            file = files[0]
+            attachments = [file["url"]]
+            filename = file["filename"]
             template.update({"headerValues": attachments, "fileName": filename})
 
         return template

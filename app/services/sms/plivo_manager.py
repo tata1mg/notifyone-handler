@@ -7,7 +7,8 @@ from app.commons.logging import LogRecord
 from app.constants.channel_gateways import SmsGateways
 from app.constants.constants import HTTPStatusCodes
 from app.service_clients.api_handler import APIClient
-from app.service_clients.callback_handler import CallbackHandler, CallbackLogger
+from app.service_clients.callback_handler import (CallbackHandler,
+                                                  CallbackLogger)
 from app.services.notifier import Notifier
 
 

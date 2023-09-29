@@ -7,12 +7,9 @@ from commonutils.handlers.sqs import SQSHandler
 from app.commons.logging.sqs import SQSAioLogger
 from app.constants.config import Config
 from app.pubsub.sqs.sms_sqs import APIClientSQS
-from app.pubsub.sqs_handler.sqs_handler import (
-    EmailSqsHandler,
-    PushSqsHandler,
-    SMSSqsHandler,
-    WhatsappSqsHandler,
-)
+from app.pubsub.sqs_handler.sqs_handler import (EmailSqsHandler,
+                                                PushSqsHandler, SMSSqsHandler,
+                                                WhatsappSqsHandler)
 from app.service_clients.callback_handler import CallbackLogger
 from app.services.email.handler import EmailHandler
 from app.services.push.handler import PushHandler
