@@ -11,9 +11,7 @@ logger = logging.getLogger()
 class PushHandler(AbstractHandler):
     CHANNEL = "push"
     HANDLER_CONFIG_KEY = "PUSH_HANDLER"
-    PROVIDER_CLASS_MAPPING = {
-        PushGateways.FCM.value: FCMHandler
-    }
+    PROVIDER_CLASS_MAPPING = {PushGateways.FCM.value: FCMHandler}
 
     @classmethod
     def handler_config_key(cls):

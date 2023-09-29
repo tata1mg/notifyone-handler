@@ -1,13 +1,30 @@
 from torpedo import Request, send_response
 
 from app.commons.logging.types import LogRecord
+from app.routes.email.api_model import EmailNotifyApiModel
 from app.routes.email.blueprint import EmailBlueprint
 from app.services.email.handler import EmailHandler
 
 email_notify_bp = EmailBlueprint("notify_email")
 
+from sanic_openapi import openapi
 
-@email_notify_bp.route("/notify", methods=["POST"])
+
+@email_notify_bp.route(
+    EmailNotifyApiModel.uri(),
+    methods=[EmailNotifyApiModel.http_method()],
+    name=EmailNotifyApiModel.name(),
+)
+@openapi.definition(
+    summary=EmailNotifyApiModel.summary(),
+    description=EmailNotifyApiModel.description(),
+    body={
+        EmailNotifyApiModel.request_content_type(): EmailNotifyApiModel.RequestBodyOpenApiModel
+    },
+    response={
+        EmailNotifyApiModel.response_content_type(): EmailNotifyApiModel.ResponseBodyOpenApiModel
+    },
+)
 async def notify(request: Request):
     data = request.json
     to = data.pop("to")

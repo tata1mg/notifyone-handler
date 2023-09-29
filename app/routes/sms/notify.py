@@ -1,13 +1,29 @@
+from sanic_openapi import openapi
 from torpedo import Request, send_response
 
 from app.commons.logging.types import LogRecord
+from app.routes.sms.api_model import SmsNotifyApiModel
 from app.routes.sms.blueprint import SmsBlueprint
 from app.services.sms.handler import SmsHandler
 
 sms_notify_bp = SmsBlueprint("notify_sms")
 
 
-@sms_notify_bp.route("/notify", methods=["POST"])
+@sms_notify_bp.route(
+    SmsNotifyApiModel.uri(),
+    methods=[SmsNotifyApiModel.http_method()],
+    name=SmsNotifyApiModel.name(),
+)
+@openapi.definition(
+    summary=SmsNotifyApiModel.summary(),
+    description=SmsNotifyApiModel.description(),
+    body={
+        SmsNotifyApiModel.request_content_type(): SmsNotifyApiModel.RequestBodyOpenApiModel
+    },
+    response={
+        SmsNotifyApiModel.response_content_type(): SmsNotifyApiModel.ResponseBodyOpenApiModel
+    },
+)
 async def notify(request: Request):
     data = request.json
     to = data.pop("to")

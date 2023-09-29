@@ -1,0 +1,1215 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "paths": {
+    "\/ping": {
+      "get": {
+        "tags": [],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "\/email\/notify": {
+      "post": {
+        "tags": [
+          "notify_email"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Email sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out email notification",
+        "description": "This API is used by the notifyone-core to send out the `critical` priority email notifications. You can use this API to test out the send email functionality.",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "https:\/\/1mg-odin-production.s3.ap-south-1.amazonaws.com\/upload\/sales_orders\/42550349\/6f55151e-adb5-4171-8fe2-5eb6599eafb7.pdf",
+                          "required": true
+                        },
+                        "filename": {
+                          "type": "string",
+                          "example": "report.pdf",
+                          "required": true
+                        }
+                      }
+                    },
+                    "description": "List of files to be attached with the email",
+                    "required": false
+                  },
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "notification_channel": {
+                    "type": "string",
+                    "description": "Notification channel - `email` for email request",
+                    "example": "email",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient email ID",
+                    "example": "user@mail.com",
+                    "required": true
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "text\/html content for email body",
+                    "example": "Hi User <br> This is test email",
+                    "required": true
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "Content for email subject",
+                    "example": "Test email subject",
+                    "required": true
+                  },
+                  "sender": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Sender name",
+                        "example": "Tata 1mg",
+                        "required": true
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Sender email address",
+                        "example": "xyz@1mg.com",
+                        "required": true
+                      },
+                      "reply_to": {
+                        "type": "string",
+                        "description": "Reply to email id of sender",
+                        "example": "reply-xyz@1mg.com",
+                        "required": true
+                      }
+                    }
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/email\/test": {
+      "post": {
+        "tags": [
+          "test_email"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Email sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out email notification using SQS subscription code",
+        "description": "This API can be used to send out email notification using the SQS subscribe code. Use this to test the SQS subscribe code",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "https:\/\/1mg-odin-production.s3.ap-south-1.amazonaws.com\/upload\/sales_orders\/42550349\/6f55151e-adb5-4171-8fe2-5eb6599eafb7.pdf",
+                          "required": true
+                        },
+                        "filename": {
+                          "type": "string",
+                          "example": "report.pdf",
+                          "required": true
+                        }
+                      }
+                    },
+                    "description": "List of files to be attached with the email",
+                    "required": false
+                  },
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "notification_channel": {
+                    "type": "string",
+                    "description": "Notification channel - `email` for email request",
+                    "example": "email",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient email ID",
+                    "example": "user@mail.com",
+                    "required": true
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "text\/html content for email body",
+                    "example": "Hi User <br> This is test email",
+                    "required": true
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "Content for email subject",
+                    "example": "Test email subject",
+                    "required": true
+                  },
+                  "sender": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Sender name",
+                        "example": "Tata 1mg",
+                        "required": true
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Sender email address",
+                        "example": "xyz@1mg.com",
+                        "required": true
+                      },
+                      "reply_to": {
+                        "type": "string",
+                        "description": "Reply to email id of sender",
+                        "example": "reply-xyz@1mg.com",
+                        "required": true
+                      }
+                    }
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/sms\/test": {
+      "post": {
+        "tags": [
+          "test_sms"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Sms sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out sms notification using SQS subscription code",
+        "description": "This API can be used to send out sms notification using the SQS subscribe code. Use this to test the SQS subscribe code",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "notification_channel": {
+                    "type": "string",
+                    "description": "Notification channel - `sms` for sms request",
+                    "example": "sms",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient mobile number",
+                    "example": "7827XXXXXX",
+                    "required": true
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "text content for sms body",
+                    "example": "Hello, This is a test sms",
+                    "required": true
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/sms\/notify": {
+      "post": {
+        "tags": [
+          "notify_sms"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Sms sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out sms notification",
+        "description": "This API is used by the notifyone-core to send out the `critical` priority sms notifications. You can use this API to test out the send sms functionality.",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "notification_channel": {
+                    "type": "string",
+                    "description": "Notification channel - `sms` for sms request",
+                    "example": "sms",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient mobile number",
+                    "example": "7827XXXXXX",
+                    "required": true
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "text content for sms body",
+                    "example": "Hello, This is a test sms",
+                    "required": true
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/whatsapp\/notify": {
+      "post": {
+        "tags": [
+          "notify_wa"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Whatsapp sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out whatsapp notification",
+        "description": "This API is used by the notifyone-core to send out the `critical` priority whatsapp notifications. You can use this API to test out the send whatsapp functionality.",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "https:\/\/1mg-odin-production.s3.ap-south-1.amazonaws.com\/upload\/sales_orders\/42550349\/6f55151e-adb5-4171-8fe2-5eb6599eafb7.pdf",
+                          "required": true
+                        },
+                        "filename": {
+                          "type": "string",
+                          "example": "report.pdf",
+                          "required": true
+                        }
+                      }
+                    },
+                    "description": "List of files to be attached with the message. Currently, only 1 file attachment is supported",
+                    "required": false
+                  },
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "Whatsapp message template name in Interkt",
+                    "example": "order_details",
+                    "required": true
+                  },
+                  "mobile": {
+                    "type": "string",
+                    "description": "Recipient mobile number",
+                    "example": "7827XXXXXX",
+                    "required": true
+                  },
+                  "body_values": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/whatsapp\/test": {
+      "post": {
+        "tags": [
+          "test_wa"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Whatsapp sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out whatsapp notification using SQS subscription code",
+        "description": "This API can be used to send out whatsapp notification using the SQS subscribe code. Use this to test the SQS subscribe code",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "https:\/\/1mg-odin-production.s3.ap-south-1.amazonaws.com\/upload\/sales_orders\/42550349\/6f55151e-adb5-4171-8fe2-5eb6599eafb7.pdf",
+                          "required": true
+                        },
+                        "filename": {
+                          "type": "string",
+                          "example": "report.pdf",
+                          "required": true
+                        }
+                      }
+                    },
+                    "description": "List of files to be attached with the message. Currently, only 1 file attachment is supported",
+                    "required": false
+                  },
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "Whatsapp message template name in Interkt",
+                    "example": "order_details",
+                    "required": true
+                  },
+                  "mobile": {
+                    "type": "string",
+                    "description": "Recipient mobile number",
+                    "example": "7827XXXXXX",
+                    "required": true
+                  },
+                  "body_values": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/push\/notify": {
+      "post": {
+        "tags": [
+          "notify_push"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Push sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out push notification",
+        "description": "This API is used by the notifyone-core to send out the `critical` priority push notifications. You can use this API to test out the send push functionality.",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  },
+                  "push_data": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Push notification title",
+                        "example": "Test push notification",
+                        "required": true
+                      },
+                      "body": {
+                        "type": "string",
+                        "description": "Push notification body",
+                        "example": "Hi, This is test push notification",
+                        "required": true
+                      },
+                      "target": {
+                        "type": "string",
+                        "description": "Push notification target URL",
+                        "required": false
+                      },
+                      "image": {
+                        "type": "string",
+                        "description": "Push notification image URL",
+                        "required": false
+                      },
+                      "registered_devices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "register_id": {
+                              "type": "string",
+                              "description": "Device registration ID",
+                              "example": "XXXXXXXXX",
+                              "required": true
+                            }
+                          }
+                        },
+                        "required": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/push\/test": {
+      "post": {
+        "tags": [
+          "test_push"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "Response status",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message",
+                      "example": "Push sent successfully"
+                    },
+                    "operator": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Operator\/Gateway name used to send the email",
+                          "example": "<Operator>"
+                        },
+                        "event_id": {
+                          "type": "string",
+                          "example": "12121212121212"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": 200,
+            "description": "Default Response"
+          }
+        },
+        "summary": "API to send out push notification using SQS subscription code",
+        "description": "This API can be used to send out push notification using the SQS subscribe code. Use this to test the SQS subscribe code",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 111,
+                    "required": true,
+                    "description": "Event ID for this request"
+                  },
+                  "event_name": {
+                    "type": "string",
+                    "description": "Event Name for this request",
+                    "example": "test_event",
+                    "required": true
+                  },
+                  "app_name": {
+                    "type": "string",
+                    "description": "App Name for this request",
+                    "example": "test_app",
+                    "required": false
+                  },
+                  "notification_log_id": {
+                    "type": "string",
+                    "description": "Log ID generated for this request (in notifyone-core service)",
+                    "example": "121212",
+                    "required": true
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "description": "Custom event type. This can be used to write priority logic",
+                    "example": "transactional",
+                    "required": false
+                  },
+                  "push_data": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Push notification title",
+                        "example": "Test push notification",
+                        "required": true
+                      },
+                      "body": {
+                        "type": "string",
+                        "description": "Push notification body",
+                        "example": "Hi, This is test push notification",
+                        "required": true
+                      },
+                      "target": {
+                        "type": "string",
+                        "description": "Push notification target URL",
+                        "required": false
+                      },
+                      "image": {
+                        "type": "string",
+                        "description": "Push notification image URL",
+                        "required": false
+                      },
+                      "registered_devices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "register_id": {
+                              "type": "string",
+                              "description": "Device registration ID",
+                              "example": "XXXXXXXXX",
+                              "required": true
+                            }
+                          }
+                        },
+                        "required": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": null,
+          "description": null
+        }
+      }
+    },
+    "\/email\/callbacks\/{provider_name}": {
+      "post": {
+        "tags": [
+          "callback_email"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "provider_name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "\/sms\/callbacks\/{provider_name}": {
+      "post": {
+        "tags": [
+          "callback_sms"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "provider_name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "\/whatsapp\/callbacks\/{provider_name}": {
+      "post": {
+        "tags": [
+          "callback_wa"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "provider_name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "notify_email"
+    },
+    {
+      "name": "test_email"
+    },
+    {
+      "name": "test_sms"
+    },
+    {
+      "name": "notify_sms"
+    },
+    {
+      "name": "notify_wa"
+    },
+    {
+      "name": "test_wa"
+    },
+    {
+      "name": "notify_push"
+    },
+    {
+      "name": "test_push"
+    },
+    {
+      "name": "callback_email"
+    },
+    {
+      "name": "callback_sms"
+    },
+    {
+      "name": "callback_wa"
+    }
+  ],
+  "servers": [],
+  "components": null,
+  "externalDocs": null
+}

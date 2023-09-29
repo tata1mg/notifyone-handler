@@ -10,7 +10,8 @@ from app.commons.logging.types import LogRecord
 from app.constants import HTTPStatusCodes
 from app.constants.channel_gateways import EmailGateways
 from app.service_clients.api_handler import APIClient
-from app.service_clients.callback_handler import CallbackHandler, CallbackLogger
+from app.service_clients.callback_handler import (CallbackHandler,
+                                                  CallbackLogger)
 from app.services.notifier import Notifier
 from app.utils import get_value_by_priority
 

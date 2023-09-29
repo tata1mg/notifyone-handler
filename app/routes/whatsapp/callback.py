@@ -19,7 +19,7 @@ async def request_parser(request: Request):
     HttpRequestParser.parse_request(request)
 
 
-@wa_callback_bp.route("/<provider_name:str>", methods=["GET", "POST"])
+@wa_callback_bp.route("/<provider_name:str>", methods=["POST"])
 async def get_callback(req: Request, provider_name: str):
     provider = WhatsappHandler.PROVIDERS.get(provider_name)
 
