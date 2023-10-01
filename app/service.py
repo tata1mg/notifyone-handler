@@ -1,4 +1,3 @@
-from sanic_openapi import openapi3_blueprint
 from torpedo import Host
 
 from app.initialize import Initialize
@@ -13,6 +12,5 @@ if __name__ == "__main__":
     # these blueprints are defined in the routes directory and has to be
     # collected in init file otherwise route will end up with 404 error.
     Initialize.initialize_service_startup_dependencies()
-    blueprint_group.append(openapi3_blueprint)
     Host._blueprint_group = blueprint_group
     Host.run()

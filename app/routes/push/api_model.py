@@ -1,4 +1,4 @@
-from commonutils.constants import HTTPMethods
+from torpedo.constants import HTTPMethod
 from sanic_openapi import openapi
 
 from app.routes.base_api_model import BaseApiModel, OperatorDetails
@@ -30,7 +30,7 @@ class PushNotifyApiModel(BaseApiModel):
 
     _uri = "/notify"
     _name = "notify_push"
-    _method = HTTPMethods.POST.value
+    _method = HTTPMethod.POST.value
     _summary = "API to send out push notification"
     _description = (
         "This API is used by the notifyone-core to send out the `critical` priority push notifications. "
@@ -73,7 +73,7 @@ class PushTestApiModel(BaseApiModel):
 
     _uri = "/test"
     _name = "test_push"
-    _method = HTTPMethods.POST.value
+    _method = HTTPMethod.POST.value
     _summary = "API to send out push notification using SQS subscription code"
     _description = (
         "This API can be used to send out push notification using the SQS subscribe code. "

@@ -1,4 +1,4 @@
-from commonutils.constants import HTTPMethods
+from torpedo.constants import HTTPMethod
 from sanic_openapi import openapi
 
 from app.routes.base_api_model import BaseApiModel, OperatorDetails
@@ -8,7 +8,7 @@ class SmsNotifyApiModel(BaseApiModel):
 
     _uri = "/notify"
     _name = "notify_sms"
-    _method = HTTPMethods.POST.value
+    _method = HTTPMethod.POST.value
     _summary = "API to send out sms notification"
     _description = (
         "This API is used by the notifyone-core to send out the `critical` priority sms notifications. "
@@ -61,7 +61,7 @@ class SmsTestApiModel(BaseApiModel):
 
     _uri = "/test"
     _name = "test_sms"
-    _method = HTTPMethods.POST.value
+    _method = HTTPMethod.POST.value
     _summary = "API to send out sms notification using SQS subscription code"
     _description = (
         "This API can be used to send out sms notification using the SQS subscribe code. "

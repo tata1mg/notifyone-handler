@@ -11,8 +11,13 @@ sms/email/push/whatsapp etc.) in the NotifyOne project.
     > whatsapp  - ["Interkt"]
 
 ### Tech Stack 
-    python version - 3.9.10
-    framework      - [torpedo] (a lightweight wrapper around the open source Sanic framework)
+* **Python** - version 3.9.10
+* **Framework** - [torpedo](https://github.com/tata1mg/torpedo) [ A lightweight wrapper around the open source [Sanic](https://sanic.dev/en/) framework ]
+
+### Tools & Technologies
+
+* **[AWS SQS](https://aws.amazon.com/sqs/)** - for asynchronous processing of the notifications and status updates
+* **[Sanic OpenApi](https://github.com/sanic-org/sanic-openapi)** - for automatic OAS3 documentation of the APIs & out of the box Swagger UI
 
 ## Features
     > Supports muli deployment - handler for each channel can be deplyed seprately
@@ -96,8 +101,8 @@ Based on your use case and expected load for a channel (number of notification r
     5. docker build . --tag notifyone-handler --build-arg SERVICE_NAME=notifyone_handler
     6. docker run notifyone-handler
 
-## API Documents
-We have used [sanic_openapi](https://pypi.org/project/sanic-openapi/) to automatically generate the OAS3 specification API documents for the APIs exposed in this service.
+## API Document
+We have used [sanic_openapi](https://github.com/sanic-org/sanic-openapi) to automatically generate the OAS3 specification API documents for the APIs exposed in this service.
 
 Once you are done with the service setup, the API documentation can be accessed at - **<service-host>:<service-port>/swagger**
 
@@ -105,6 +110,8 @@ Example - If you started your service at port number 9401, the documentation can
 
 #### **Alternatively,**
 If you wish to have a look at the API documentation without deploying the service, you can use an independent swagger UI to view the documentation by pointing the swagger UI to the [swagger.json](https://github.com/tata1mg/notifyone-handler/blob/master/api_doc.json) file.
+
+Or, import the [api_doc.json](https://github.com/tata1mg/notifyone-handler/blob/master/api_doc.json) file into Postman as OAS3 API collection.
 
 
 
