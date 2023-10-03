@@ -94,12 +94,13 @@ Based on your use case and expected load for a channel (number of notification r
     7. python3 -m pipenv install
     8. python3 -m app.service
 #### Docker container based deployment
+###### Here, we pre-assume that you have got docker installed on you system, and it's up and running
     1. git clone https://github.com/tata1mg/notifyone-handler.git
     2. cd notifyone-handler
     3. touch config.json
     4. Generate actual keys and values for config.json file. Refer to config_template.json for keys.
     5. docker build . --tag notifyone-handler --build-arg SERVICE_NAME=notifyone_handler
-    6. docker run notifyone-handler
+    6. docker run -p <service-host-port>:<service-container-port> --name notifyone-handler --detach notifyone-handler
 
 ## API Document
 We have used [sanic_openapi](https://github.com/sanic-org/sanic-openapi) to automatically generate the OAS3 specification API documents for the APIs exposed in this service.
@@ -109,9 +110,9 @@ Once you are done with the service setup, the API documentation can be accessed 
 Example - If you started your service at port number 9401, the documentation can be accessed at - **localhost:9401/swagger**
 
 #### **Alternatively,**
-If you wish to have a look at the API documentation without deploying the service, you can use an independent swagger UI to view the documentation by pointing the swagger UI to the [swagger.json](https://github.com/tata1mg/notifyone-handler/blob/master/api_doc.json) file.
+If you wish to have a look at the API documentation without deploying the service, you can use an independent swagger UI to view the documentation by pointing the swagger UI to the [api_doc.json](https://raw.githubusercontent.com/tata1mg/notifyone-handler/master/api_doc.json) file.
 
-Or, import the [api_doc.json](https://github.com/tata1mg/notifyone-handler/blob/master/api_doc.json) file into Postman as OAS3 API collection.
+Or, import the [api_doc.json](https://raw.githubusercontent.com/tata1mg/notifyone-handler/master/api_doc.json) file into Postman as OAS3 API collection.
 
 
 
