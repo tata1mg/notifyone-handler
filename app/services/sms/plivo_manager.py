@@ -67,7 +67,7 @@ class PlivoHandler(Notifier, APIClient, CallbackHandler):
         auth_token = self._config["PLIVO_AUTH_TOKEN"]
         auth_id = self._config["PLIVO_AUTH_ID"]
         callback_url = self._config["PLIVO_CALLBACK_URL"]
-        self.timeout = self._config["TIMEOUT"]
+        self.timeout = self._config.get("TIMEOUT") or 5
         self.auth = (auth_id, auth_token)
         url = url.format(auth_id=auth_id)
         values = {
