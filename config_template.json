@@ -1,7 +1,7 @@
 {
   "NAME": "notifyone_handler",
   "HOST": "0.0.0.0",
-  "PORT": 9401,
+  "PORT": 9403,
   "WORKERS": 1,
   "DEBUG": true,
   "SMS_HANDLER": {
