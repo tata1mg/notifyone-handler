@@ -6,7 +6,7 @@ sms/email/push/whatsapp etc.) in the NotifyOne project.
 
 ### Supported channels & gateways for each channel
     > email     - ["SparkPost", "AWS SES"]
-    > sms       - ["SMS COUNTRY", "Plivo"]
+    > sms       - ["SMS Country", "Plivo", "AWS SNS"]
     > push      - ["FCM"]
     > whatsapp  - ["Interkt"]
 
