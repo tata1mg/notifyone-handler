@@ -123,7 +123,7 @@
   "SQS": {
     "PUBLISH": {
       "LOGGING": {
-        "QUEUE_NAME": ""
+        "QUEUE_NAME": "stag-ns_notification_status_update"
       }
     },
     "SUBSCRIBE": {
@@ -152,8 +152,8 @@
   "SQS_AUTH": {
     "AWS_ACCESS_KEY_ID": "",
     "AWS_SECRET_ACCESS_KEY": "",
-    "SQS_REGION": "",
-    "SQS_ENDPOINT_URL": ""
+    "SQS_REGION": "eu-west-2",
+    "SQS_ENDPOINT_URL": "http://localhost:4566"
   },
   "TIMEOUT": 30,
   "SENTRY": {
