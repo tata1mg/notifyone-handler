@@ -6,7 +6,7 @@
   "DEBUG": true,
   "SMS_HANDLER": {
     "DEFAULT_PRIORITY": ["SMS_COUNTRY", "PLIVO", "AWS_SNS"],
-    "PRIORITY_LOGIC": "<eval expression to get a gateway for current request>",
+    "PRIORITY_LOGIC": "['SMS_COUNTRY', 'PLIVO', 'AWS_SNS'] if True else ['SMS_COUNTRY', 'PLIVO', 'AWS_SNS']",
     "GATEWAYS": {
       "SMS_COUNTRY": {
         "ID": "SMS_COUNTRY",
@@ -63,7 +63,7 @@
   },
   "EMAIL_HANDLER": {
     "DEFAULT_PRIORITY": ["SPARK_POST", "AWS_SES"],
-    "PRIORITY_LOGIC": "<eval expression to get a gateway for current request>",
+    "PRIORITY_LOGIC": "['SPARK_POST', 'AWS_SES'] if True else ['SPARK_POST', 'AWS_SES']",
     "GATEWAYS": {
       "SPARK_POST": {
         "ID": "SPARK_POST",
@@ -84,8 +84,8 @@
     }
   },
   "PUSH_HANDLER": {
-    "DEFAULT_PRIORITY": ["FCM", "APNS"],
-    "PRIORITY_LOGIC": "<eval expression to get a gateway for current request>",
+    "DEFAULT_PRIORITY": ["FCM"],
+    "PRIORITY_LOGIC": "",
     "GATEWAYS": {
       "FCM": {
         "ID": "FCM",
@@ -93,20 +93,12 @@
         "CONFIGURATION": {
           "AUTH_KEY": ""
         }
-      },
-      "APNS": {
-        "ID": "APNS",
-        "GATEWAY": "APNS",
-        "CONFIGURATION": {
-          "CERT": "",
-          "PRIVATE_KEY": ""
-        }
       }
     }
   },
   "WHATSAPP_HANDLER": {
     "DEFAULT_PRIORITY": ["INTERAKT"],
-    "PRIORITY_LOGIC": "<eval expression to get a gateway for current request>",
+    "PRIORITY_LOGIC": "",
     "GATEWAYS": {
       "INTERAKT": {
         "ID": "INTERAKT",
