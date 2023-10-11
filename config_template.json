@@ -44,18 +44,12 @@
         "GATEWAY": "AWS_SNS",
         "CONFIGURATION": {
           "REGION_NAME": "ap-south-1",
-          "SERVICE_NAME": "sns",
+          "AWS_ACCESS_KEY_ID": "",
+          "AWS_SECRET_ACCESS_KEY": "",
+          "SNS_ENDPOINT_URL": "http://localhost:4566",
           "MESSAGE_ATTRIBUTES": {
-            "OTP": {
-              "AWS.SNS.SMS.SMSType": {
-                "DataType": "String",
-                "StringValue": "Transactional"
-              },
-              "AWS.SNS.SMS.SenderID": {
-                "DataType": "String",
-                "StringValue": "iOneMG"
-              }
-            }
+            "sms_type": "Transactional",
+            "sender_id": "iOneMG"
           }
         }
       }
