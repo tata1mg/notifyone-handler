@@ -11,21 +11,32 @@ class SnsHandler(Notifier):
 
     def __init__(self, config):
         self._config = config
+        AWSSNSManager.initialize(self._config)
 
     async def send_notification(self, to, message, **kwargs):
-        channel = kwargs.get("channel")
-        if channel == SMSSenderConstant.OTP_CHANNEL.value:
-            message_attributes = self._config["AWS_SNS"]["MESSAGE_ATTRIBUTES"].get(
-                "OTP"
+        attributes_config = self._config["MESSAGE_ATTRIBUTES"]
+        message_attributes = dict()
+        if 'sender_id' in attributes_config:
+            message_attributes.update(
+                {
+                    "AWS.SNS.SMS.SenderID": {
+                        "DataType": "String",
+                        "StringValue": attributes_config["sender_id"]
+                    }
+                }
             )
-        else:
-            message_attributes = self._config["AWS_SNS"]["MESSAGE_ATTRIBUTES"].get(
-                "TRANSACTIONAL"
+        if 'sms_type' in attributes_config:
+            message_attributes.update(
+                {
+                    "AWS.SNS.SMS.SMSType": {
+                        "DataType": "String",
+                        "StringValue": attributes_config["sms_type"]
+                    }
+                }
             )
 
         if not to.startswith("+91"):
             to = "+91" + to
-
         try:
             response = await AWSSNSManager.send_sms(
                 phone_number=to, message=message, message_attributes=message_attributes
@@ -38,6 +49,8 @@ class SnsHandler(Notifier):
                     return Response(
                         status_code=HTTPStatusCodes.SUCCESS.value,
                         data={"data": response.get("MessageId")},
+                        event_id=response.get("MessageId"),
+                        meta=response,
                     )
                 else:
                     return Response(
