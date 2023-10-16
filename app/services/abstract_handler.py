@@ -99,12 +99,12 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
                 )
             if response.status_code == HTTPStatusCodes.SUCCESS.value:
                 logger.info(
-                    "Successfully sent email using %s", provider.__class__.__name__
+                    "Successfully sent %s using %s" % (cls.CHANNEL, provider.__class__.__name__)
                 )
                 break
             else:
                 logger.error(
-                    "Couldn't send email using %s provider", provider.__class__.__name__
+                    "Couldn't send %s using %s provider" % (cls.CHANNEL, provider.__class__.__name__)
                 )
         return provider, response
 
