@@ -1,8 +1,8 @@
 import logging
 
 from app.constants.channel_gateways import WhatsAppGateways
-from app.services.abstract_handler import AbstractHandler
-from app.services.whatsapp.interakt import InteraktHandler
+from app.services.handlers.abstract_handler import AbstractHandler
+from app.services.handlers.whatsapp.interakt import InteraktHandler
 
 logger = logging.getLogger()
 

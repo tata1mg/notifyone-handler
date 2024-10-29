@@ -5,10 +5,10 @@ from sanic.log import logger
 
 from app.commons.logging.types import LogRecord
 from app.constants.error_messages import JsonDecode
-from app.services.email.handler import EmailHandler
-from app.services.push.handler import PushHandler
-from app.services.sms.handler import SmsHandler
-from app.services.whatsapp.handler import WhatsappHandler
+from app.services.handlers.email.handler import EmailHandler
+from app.services.handlers.push import PushHandler
+from app.services.handlers.sms.handler import SmsHandler
+from app.services.handlers.whatsapp.handler import WhatsappHandler
 
 
 class SMSSqsHandler(SQSHandler):

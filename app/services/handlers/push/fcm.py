@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Dict, List
 
@@ -8,7 +7,7 @@ from app.commons import http, push
 from app.constants import HTTPStatusCodes
 from app.constants.channel_gateways import PushGateways
 from app.service_clients.api_handler import APIClient
-from app.services.notifier import Notifier
+from app.services.handlers.notifier import Notifier
 
 logger = logging.getLogger()
 

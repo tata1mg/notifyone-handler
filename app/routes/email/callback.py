@@ -6,7 +6,7 @@ from sanic.response import json
 from app.routes.email.blueprint import EmailBlueprint
 from app.routes.middlewares.requests import HttpRequestParser
 from app.service_clients.callback_handler import CallbackHandler
-from app.services.email.handler import EmailHandler
+from app.services.handlers.email.handler import EmailHandler
 
 logger = logging.getLogger()
 

@@ -9,7 +9,7 @@ from app.constants.constants import HTTPStatusCodes, SMSSenderConstant
 from app.service_clients.api_handler import APIClient
 from app.service_clients.callback_handler import (CallbackHandler,
                                                   CallbackLogger)
-from app.services.notifier import Notifier
+from app.services.handlers.notifier import Notifier
 
 logger = logging.getLogger()
 

@@ -3,7 +3,7 @@ from torpedo import Request, send_response
 from app.commons.logging.types import LogRecord
 from app.routes.email.api_model import EmailNotifyApiModel
 from app.routes.email.blueprint import EmailBlueprint
-from app.services.email.handler import EmailHandler
+from app.services.handlers.email.handler import EmailHandler
 
 email_notify_bp = EmailBlueprint("notify_email")
 
