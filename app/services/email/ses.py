@@ -175,7 +175,6 @@ class AwsSesHandler(Notifier):
         to: str,
         body: str,
         subject: str,
-        reply_to: str,
         sender: dict = None,
         **kwargs,
     ):
@@ -192,7 +191,7 @@ class AwsSesHandler(Notifier):
                 recipients=recipients,
                 message=message,
                 sender=sender_address,
-                reply_to=reply_to,
+                reply_to=sender["reply_to"],
             )
         except Exception as err:
             logger.exception("Couldn't send mail using AWS SES %s", err)
