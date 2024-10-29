@@ -1,12 +1,12 @@
 import logging
 
-from sanic import Blueprint, Request
+from sanic import Request
 from sanic.response import json
 
 from app.routes.middlewares.requests import HttpRequestParser
 from app.routes.sms.blueprint import SmsBlueprint
 from app.service_clients.callback_handler import CallbackHandler
-from app.services.sms.handler import SmsHandler
+from app.services.handlers.sms.handler import SmsHandler
 
 logger = logging.getLogger()
 

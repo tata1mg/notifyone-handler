@@ -5,7 +5,7 @@ from typing import Dict, Optional
 from app.commons import http, time
 from app.commons.logging import types
 from app.pubsub.sqs import APIClientSQS
-from app.services.notifier import Notifier
+from app.services.handlers.notifier import Notifier
 
 
 @dataclass

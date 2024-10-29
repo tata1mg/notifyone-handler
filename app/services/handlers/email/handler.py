@@ -1,9 +1,9 @@
 import logging
 
 from app.constants.channel_gateways import EmailGateways
-from app.services.abstract_handler import AbstractHandler
-from app.services.email.ses import AwsSesHandler
-from app.services.email.sparkpost import SparkPostHandler
+from app.services.handlers.abstract_handler import AbstractHandler
+from app.services.handlers.email.ses import AwsSesHandler
+from app.services.handlers.email.sparkpost import SparkPostHandler
 
 logger = logging.getLogger()
 

@@ -4,8 +4,8 @@ from typing import Dict
 
 from app.commons.logging.types import AsyncLoggerContextCreator, LogRecord
 from app.constants import HTTPStatusCodes
-from app.services.gateway_priority import PriorityGatewaySelection
-from app.services.notifier import Notifier
+from app.services.handlers.gateway_priority import PriorityGatewaySelection
+from app.services.handlers.notifier import Notifier
 
 logger = logging.getLogger()
 

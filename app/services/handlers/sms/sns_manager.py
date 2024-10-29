@@ -1,8 +1,8 @@
 from app.commons.http import Response
 from app.constants.channel_gateways import SmsGateways
-from app.constants.constants import HTTPStatusCodes, SMSSenderConstant
+from app.constants.constants import HTTPStatusCodes
 from app.service_clients.aws_sns_manager import AWSSNSManager
-from app.services.notifier import Notifier
+from app.services.handlers.notifier import Notifier
 
 
 class SnsHandler(Notifier):
