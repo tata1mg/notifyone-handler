@@ -34,7 +34,7 @@
         "CONFIGURATION": {
           "PLIVO_SMS_URL": "https://api.plivo.com/v1/Account/xxxxxx/Message/",
           "PLIVO_AUTH_ID": "xxxxx",
-          "PLIVO_AUTH_TOKEN": "ZTFmMzYxODBmZWZiNGQwNjYyZmY5ODhmYjYxMjA1",
+          "PLIVO_AUTH_TOKEN": "XXXXXXxxxxXXXXXxxxxXXXXXX",
           "PLIVO_SENDER_ID": "HKPLUS",
           "PLIVO_CALLBACK_URL": "https://stagapi.1mg.com/analytics/lara_logging"
         }
@@ -65,7 +65,7 @@
         "CONFIGURATION": {
           "BASE_URL": "https://api.sparkpost.com",
           "PATH": "/api/v1/transmissions?num_rcpt_errors=3",
-          "API_KEY": "cc1a8516911d983877e16642958007732a924187"
+          "API_KEY": "XXxxxxxCCXXXXXxxxxxxxxxxXXX"
         }
       },
       "AWS_SES": {
