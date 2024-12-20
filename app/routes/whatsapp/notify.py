@@ -4,7 +4,7 @@ from sanic_openapi import openapi
 from app.commons.logging.types import LogRecord
 from app.routes.whatsapp.api_model import WhatsappNotifyApiModel
 from app.routes.whatsapp.blueprint import WhatsappBlueprint
-from app.services.whatsapp.handler import WhatsappHandler
+from app.services.handlers.whatsapp.handler import WhatsappHandler
 
 wa_notify_bp = WhatsappBlueprint("notify_wa")
 

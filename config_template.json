@@ -4,108 +4,6 @@
   "PORT": 9403,
   "WORKERS": 1,
   "DEBUG": true,
-  "SMS_HANDLER": {
-    "DEFAULT_PRIORITY": ["SMS_COUNTRY", "PLIVO", "AWS_SNS"],
-    "PRIORITY_LOGIC": "['SMS_COUNTRY', 'PLIVO', 'AWS_SNS'] if True else ['SMS_COUNTRY', 'PLIVO', 'AWS_SNS']",
-    "GATEWAYS": {
-      "SMS_COUNTRY": {
-        "ID": "SMS_COUNTRY",
-        "GATEWAY": "SMS_COUNTRY",
-        "CONFIGURATION": {
-          "SMS_COUNTRY_USERNAME": "otp_sc_stag",
-          "SMS_COUNTRY_PASSWORD": "xxxxx",
-          "SMS_COUNTRY_SENDER_ID": "HKPLUS",
-          "SMS_COUNTRY_URL": "http://www.smscountry.com/SMSCwebservice_bulk.aspx"
-        }
-      },
-      "SMS_COUNTRY1": {
-        "ID": "SMS_COUNTRY1",
-        "GATEWAY": "SMS_COUNTRY",
-        "CONFIGURATION": {
-          "SMS_COUNTRY_USERNAME": "otp_sc_stag",
-          "SMS_COUNTRY_PASSWORD": "xxxxx",
-          "SMS_COUNTRY_SENDER_ID": "HKPLUS",
-          "SMS_COUNTRY_URL": "http://www.smscountry.com/SMSCwebservice_bulk.aspx"
-        }
-      },
-      "PLIVO": {
-        "ID": "PLIVO",
-        "GATEWAY": "PLIVO",
-        "CONFIGURATION": {
-          "PLIVO_SMS_URL": "https://api.plivo.com/v1/Account/xxxxxx/Message/",
-          "PLIVO_AUTH_ID": "xxxxx",
-          "PLIVO_AUTH_TOKEN": "XXXXXXxxxxXXXXXxxxxXXXXXX",
-          "PLIVO_SENDER_ID": "HKPLUS",
-          "PLIVO_CALLBACK_URL": "https://stagapi.1mg.com/analytics/lara_logging"
-        }
-      },
-      "AWS_SNS": {
-        "ID": "AWS_SNS",
-        "GATEWAY": "AWS_SNS",
-        "CONFIGURATION": {
-          "REGION_NAME": "ap-south-1",
-          "AWS_ACCESS_KEY_ID": "",
-          "AWS_SECRET_ACCESS_KEY": "",
-          "SNS_ENDPOINT_URL": "http://localhost:4566",
-          "MESSAGE_ATTRIBUTES": {
-            "sms_type": "Transactional",
-            "sender_id": "iOneMG"
-          }
-        }
-      }
-    }
-  },
-  "EMAIL_HANDLER": {
-    "DEFAULT_PRIORITY": ["SPARK_POST", "AWS_SES"],
-    "PRIORITY_LOGIC": "['SPARK_POST', 'AWS_SES'] if True else ['SPARK_POST', 'AWS_SES']",
-    "GATEWAYS": {
-      "SPARK_POST": {
-        "ID": "SPARK_POST",
-        "GATEWAY": "SPARK_POST",
-        "CONFIGURATION": {
-          "BASE_URL": "https://api.sparkpost.com",
-          "PATH": "/api/v1/transmissions?num_rcpt_errors=3",
-          "API_KEY": "XXxxxxxCCXXXXXxxxxxxxxxxXXX"
-        }
-      },
-      "AWS_SES": {
-        "ID": "AWS_SES",
-        "GATEWAY": "AWS_SES",
-        "CONFIGURATION": {
-          "AWS_REGION": "ap-south-1"
-        }
-      }
-    }
-  },
-  "PUSH_HANDLER": {
-    "DEFAULT_PRIORITY": ["FCM"],
-    "PRIORITY_LOGIC": "",
-    "GATEWAYS": {
-      "FCM": {
-        "ID": "FCM",
-        "GATEWAY": "FCM",
-        "CONFIGURATION": {
-          "AUTH_KEY": ""
-        }
-      }
-    }
-  },
-  "WHATSAPP_HANDLER": {
-    "DEFAULT_PRIORITY": ["INTERAKT"],
-    "PRIORITY_LOGIC": "",
-    "GATEWAYS": {
-      "INTERAKT": {
-        "ID": "INTERAKT",
-        "GATEWAY": "INTERAKT",
-        "CONFIGURATION": {
-          "CAPACITY": 1,
-          "HOST": "",
-          "PATH": "",
-          "AUTHORIZATION": ""
-        }
-      }
-    }
-  },
   "SQS": {
     "PUBLISH": {
       "LOGGING": {
@@ -159,5 +57,9 @@
     "EMAIL",
     "PUSH",
     "WHATSAPP"
-  ]
+  ],
+  "NOTIFYONE_CORE": {
+    "HOST": "",
+    "TIMEOUT": 10
+  }
 }

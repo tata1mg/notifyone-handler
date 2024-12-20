@@ -1,12 +1,12 @@
 import logging
 
-from sanic import Blueprint, Request
+from sanic import Request
 from sanic.response import json
 
 from app.routes.middlewares.requests import HttpRequestParser
 from app.routes.whatsapp.blueprint import WhatsappBlueprint
 from app.service_clients.callback_handler import CallbackHandler
-from app.services.whatsapp.handler import WhatsappHandler
+from app.services.handlers.whatsapp.handler import WhatsappHandler
 
 logger = logging.getLogger()
 

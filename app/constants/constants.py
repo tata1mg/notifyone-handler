@@ -1,5 +1,7 @@
 from enum import Enum
 
+from commonutils.utils import CustomEnum
+
 X_SHARED_CONTEXT = "X-SHARED-CONTEXT"
 
 
@@ -31,3 +33,10 @@ class HTTPStatusCodes(Enum):
     NOT_FOUND = 404
     INTERNAL_ERROR = 500
     TIMEOUT_ERROR = 408
+
+
+class Channels(CustomEnum):
+    EMAIL = "email"
+    SMS = "sms"
+    PUSH = "push"
+    WHATSAPP = "whatsapp"

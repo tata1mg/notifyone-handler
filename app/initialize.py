@@ -11,10 +11,10 @@ from app.pubsub.sqs_handler.sqs_handler import (EmailSqsHandler,
                                                 PushSqsHandler, SMSSqsHandler,
                                                 WhatsappSqsHandler)
 from app.service_clients.callback_handler import CallbackLogger
-from app.services.email.handler import EmailHandler
-from app.services.push.handler import PushHandler
-from app.services.sms.handler import SmsHandler
-from app.services.whatsapp.handler import WhatsappHandler
+from app.services.handlers.email.handler import EmailHandler
+from app.services.handlers.push.handler import PushHandler
+from app.services.handlers.sms.handler import SmsHandler
+from app.services.handlers.whatsapp.handler import WhatsappHandler
 
 
 class Initialize:
@@ -67,10 +67,10 @@ class Initialize:
 
     @classmethod
     def initialize_handlers(cls, logger):
-        SmsHandler.initialize(config=cls.config, log=logger)
-        EmailHandler.initialize(config=cls.config, log=logger)
-        PushHandler.initialize(config=cls.config, log=logger)
-        WhatsappHandler.initialize(config=cls.config, log=logger)
+        SmsHandler.initialize(log=logger)
+        EmailHandler.initialize(log=logger)
+        PushHandler.initialize(log=logger)
+        WhatsappHandler.initialize(log=logger)
 
     @classmethod
     def initialize_callback_logger(cls, logger):
