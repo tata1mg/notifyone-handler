@@ -1,5 +1,6 @@
 import logging
 
+from app.constants import Channels
 from app.constants.channel_gateways import SmsGateways
 from app.services.handlers.abstract_handler import AbstractHandler
 from app.services.handlers.sms.plivo_manager import PlivoHandler
@@ -10,17 +11,12 @@ logger = logging.getLogger()
 
 
 class SmsHandler(AbstractHandler):
-    CHANNEL = "sms"
-    HANDLER_CONFIG_KEY = "SMS_HANDLER"
+    CHANNEL = Channels.SMS.value
     PROVIDER_CLASS_MAPPING = {
         SmsGateways.SMS_COUNTRY.value: SMSCountryHandler,
         SmsGateways.PLIVO.value: PlivoHandler,
         SmsGateways.AWS_SNS.value: SnsHandler,
     }
-
-    @classmethod
-    def handler_config_key(cls):
-        return cls.HANDLER_CONFIG_KEY
 
     @classmethod
     def gateways_class_mapping(cls):

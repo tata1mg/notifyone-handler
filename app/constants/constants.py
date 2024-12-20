@@ -36,7 +36,7 @@ class HTTPStatusCodes(Enum):
 
 
 class Channels(CustomEnum):
-    EMAIL = "EMAIL"
-    SMS = "SMS"
-    PUSH = "PUSH"
-    WHATSAPP = "WHATSAPP"
+    EMAIL = "email"
+    SMS = "sms"
+    PUSH = "push"
+    WHATSAPP = "whatsapp"

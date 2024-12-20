@@ -67,10 +67,10 @@ class Initialize:
 
     @classmethod
     def initialize_handlers(cls, logger):
-        SmsHandler.initialize(config=cls.config, log=logger)
-        EmailHandler.initialize(config=cls.config, log=logger)
-        PushHandler.initialize(config=cls.config, log=logger)
-        WhatsappHandler.initialize(config=cls.config, log=logger)
+        SmsHandler.initialize(log=logger)
+        EmailHandler.initialize(log=logger)
+        PushHandler.initialize(log=logger)
+        WhatsappHandler.initialize(log=logger)
 
     @classmethod
     def initialize_callback_logger(cls, logger):

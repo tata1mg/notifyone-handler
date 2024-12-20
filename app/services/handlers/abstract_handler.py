@@ -16,21 +16,13 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
     For example, Handler classes for email/sms/push/whatsapp channels will extend this class
     """
 
+    _HANDLER_CONFIG = dict()
+
     logger = None
     CHANNEL = None
     MAX_ATTEMPTS = None
-    DEFAULT_PRIORITY: list = None
-    PRIORITY_LOGIC: str = None
 
     PROVIDERS: Dict[str, Notifier] = {}
-
-    @classmethod
-    @abstractmethod
-    def handler_config_key(cls):
-        """
-        This abstract method must be overridden by the actual channel manager.
-        """
-        pass
 
     @classmethod
     @abstractmethod
@@ -42,29 +34,38 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
 
     @classmethod
     def get_default_priority(cls) -> list:
-        return cls.DEFAULT_PRIORITY
+        return cls._HANDLER_CONFIG["DEFAULT_PRIORITY"]
 
     @classmethod
     def get_priority_logic(cls) -> str:
-        return cls.PRIORITY_LOGIC
+        return cls._HANDLER_CONFIG["PRIORITY_LOGIC"]
 
     @classmethod
-    def initialize(cls, config: Dict, log: AsyncLoggerContextCreator):
-        handler_config = config.get(cls.handler_config_key())
+    def update_configuration(cls, handler_configuration: dict):
+        cls._HANDLER_CONFIG = handler_configuration
+        cls.refresh_providers()
 
-        cls.DEFAULT_PRIORITY = handler_config["DEFAULT_PRIORITY"]
-        cls.PRIORITY_LOGIC = handler_config.get("PRIORITY_LOGIC") or None
-
-        gateways = handler_config["GATEWAYS"]
-
-        cls.ENABLED_GATEWAYS_COUNT = len(gateways.keys())
-
-        for gateway_config in gateways.values():
-            id = gateway_config["ID"]
-            gateway = gateway_config["GATEWAY"]
-            cls.PROVIDERS[id] = cls.gateways_class_mapping()[gateway](
-                gateway_config["CONFIGURATION"]
+    @classmethod
+    def refresh_providers(cls):
+        if not cls._HANDLER_CONFIG:
+            #TODO - implement the logic to fetch the configuration from Core and set here
+            return
+        gateways = cls._HANDLER_CONFIG["gateways"]
+        cls.ENABLED_GATEWAYS_COUNT = len(gateways)
+        new_providers_map = dict()
+        for gateway_config in gateways:
+            unique_id = gateway_config["unique_identifier"]
+            gateway = gateway_config["gateway"]
+            new_providers_map[unique_id] = cls.gateways_class_mapping()[gateway](
+                gateway_config["configuration"]
             )
+        existing_providers_map = cls.PROVIDERS
+        cls.PROVIDERS = new_providers_map
+        del existing_providers_map
+
+    @classmethod
+    def initialize(cls, log: AsyncLoggerContextCreator):
+        cls.refresh_providers()
         cls.logger = log
 
     @classmethod
