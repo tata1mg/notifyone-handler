@@ -6,7 +6,7 @@ from sanic.log import logger
 from app.commons.logging.types import LogRecord
 from app.constants.error_messages import JsonDecode
 from app.services.handlers.email.handler import EmailHandler
-from app.services.handlers.push import PushHandler
+from app.services.handlers.push.handler import PushHandler
 from app.services.handlers.sms.handler import SmsHandler
 from app.services.handlers.whatsapp.handler import WhatsappHandler
 
