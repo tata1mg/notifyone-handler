@@ -4,7 +4,7 @@ from sanic_openapi import openapi
 from app.commons.logging.types import LogRecord
 from app.routes.push.api_model import PushNotifyApiModel
 from app.routes.push.blueprint import PushBlueprint
-from app.services.push.handler import PushHandler
+from app.services.handlers.push.handler import PushHandler
 
 push_notify_bp = PushBlueprint("notify_push")
 

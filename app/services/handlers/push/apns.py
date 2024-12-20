@@ -1,11 +1,11 @@
 import logging
-from typing import Dict, List
+from typing import Dict
 
 from app.commons import http, push
 from app.constants import HTTPStatusCodes
 from app.constants.channel_gateways import PushGateways
 from app.service_clients.http_20_client import HTTP20Client
-from app.services.notifier import Notifier
+from app.services.handlers.notifier import Notifier
 
 logger = logging.getLogger()
 

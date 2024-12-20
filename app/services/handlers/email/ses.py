@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -9,7 +8,7 @@ import aiobotocore
 
 from app.commons import aws, email, http
 from app.constants.channel_gateways import EmailGateways
-from app.services.notifier import Notifier
+from app.services.handlers.notifier import Notifier
 
 logger = logging.getLogger()
 

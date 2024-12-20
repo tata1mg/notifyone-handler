@@ -4,7 +4,7 @@ from torpedo import Request, send_response
 from app.commons.logging.types import LogRecord
 from app.routes.sms.api_model import SmsNotifyApiModel
 from app.routes.sms.blueprint import SmsBlueprint
-from app.services.sms.handler import SmsHandler
+from app.services.handlers.sms.handler import SmsHandler
 
 sms_notify_bp = SmsBlueprint("notify_sms")
 
