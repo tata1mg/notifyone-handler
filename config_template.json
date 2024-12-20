@@ -59,7 +59,7 @@
     "WHATSAPP"
   ],
   "NOTIFYONE_CORE": {
-    "HOST": "",
+    "HOST": "http://localhost:9402",
     "TIMEOUT": 10
   }
 }
