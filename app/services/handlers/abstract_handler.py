@@ -34,11 +34,11 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
 
     @classmethod
     def get_default_priority(cls) -> list:
-        return cls._HANDLER_CONFIG["DEFAULT_PRIORITY"]
+        return cls._HANDLER_CONFIG["default_priority"]
 
     @classmethod
     def get_priority_logic(cls) -> str:
-        return cls._HANDLER_CONFIG["PRIORITY_LOGIC"]
+        return cls._HANDLER_CONFIG["dynamic_priority"]
 
     @classmethod
     def update_configuration(cls, handler_configuration: dict):
