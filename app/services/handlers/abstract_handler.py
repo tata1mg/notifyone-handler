@@ -41,6 +41,10 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
         return cls._HANDLER_CONFIG["dynamic_priority"]
 
     @classmethod
+    def get_configured_gateways(cls) -> list:
+        return list(cls.PROVIDERS.keys())
+
+    @classmethod
     def update_configuration(cls, handler_configuration: dict):
         cls._HANDLER_CONFIG = handler_configuration
         cls.refresh_providers()

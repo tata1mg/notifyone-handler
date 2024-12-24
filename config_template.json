@@ -61,5 +61,8 @@
   "NOTIFYONE_CORE": {
     "HOST": "http://localhost:9402",
     "TIMEOUT": 10
+  },
+  "CHANNEL_PARTNERS": {
+    "CONFIG_SYNC_DELAY": 5
   }
 }
