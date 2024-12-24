@@ -23,6 +23,14 @@ class PriorityGatewaySelection(ABC):
         pass
 
     @classmethod
+    @abstractmethod
+    def get_configured_gateways(cls) -> list:
+        """
+        This abstract method must be overridden by the channel handler
+        """
+        pass
+
+    @classmethod
     def select_gateway(cls, n_attempts: int, request_data: dict) -> str:
         """
         Gateway selection for the current send request
@@ -50,4 +58,8 @@ class PriorityGatewaySelection(ABC):
                 # Log the exception and fallback to default priority order
                 pass
         total_gateways = min(len(cls.get_default_priority()), len(current_priority))
-        return current_priority[n_attempts % total_gateways]
+        if total_gateways > 0:
+            return current_priority[n_attempts % total_gateways]
+        else:
+            all_gateways = cls.get_configured_gateways()
+            return all_gateways[n_attempts % len(all_gateways)]
