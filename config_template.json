@@ -61,5 +61,31 @@
   "NOTIFYONE_CORE": {
     "HOST": "http://localhost:9402",
     "TIMEOUT": 10
+  },
+  "SMS_GATEWAYS": [
+    "aws_sns",
+    "plivo",
+    "sms_country"
+  ],
+  "SMS_COUNTRY": {
+    "TIMEOUT": 5,
+    "SMS_COUNTRY_USERNAME": "otp_sc_stag",
+    "SMS_COUNTRY_PASSWORD": "xxxxx",
+    "SMS_COUNTRY_SENDER_ID": "HKPLUS",
+    "SMS_COUNTRY_OTP_USERNAME": "otp_sc_stag",
+    "SMS_COUNTRY_OTP_PASSWORD": "xxxxx",
+    "SMS_COUNTRY_OTP_SENDER_ID": "HKPLUS",
+    "SMS_COUNTRY_DROPLET_USERNAME": "droplet_sc_stag",
+    "SMS_COUNTRY_DROPLET_PASSWORD": "xxxxx",
+    "SMS_COUNTRY_DROPLET_SENDER_ID": "HKPLUS",
+    "SMS_COUNTRY_URL": "http://www.smscountry.com/SMSCwebservice_bulk.aspx"
+  },
+  "PLIVO": {
+    "TIMEOUT": 30,
+    "PLIVO_SMS_URL": "https://api.plivo.com/v1/Account/xxxxxx/Message/",
+    "PLIVO_AUTH_ID": "xxxxx",
+    "PLIVO_AUTH_TOKEN": "ZTFmMzYxODBmZWZiNGQwNjYyZmY5ODhmYjYxMjA1",
+    "PLIVO_SENDER_ID": "HKPLUS",
+    "PLIVO_CALLBACK_URL": "https://stagapi.1mg.com/analytics/lara_logging"
   }
 }
