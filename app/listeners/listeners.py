@@ -1,7 +1,6 @@
 import asyncio
-
-from asyncpg import CharacterNotInRepertoireError
 from torpedo.constants import ListenerEventTypes
+from asyncpg import CharacterNotInRepertoireError
 
 from app.initialize import Initialize
 from app.services.channel_partners.get_configurations import ChannelPartners

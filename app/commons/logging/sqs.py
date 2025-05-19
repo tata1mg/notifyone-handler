@@ -4,6 +4,7 @@ from typing import Dict, Optional
 
 from app.commons import http, time
 from app.commons.logging import types
+from app.commons import execution_details as ed
 from app.pubsub.sqs import APIClientSQS
 from app.services.handlers.notifier import Notifier
 
@@ -12,12 +13,15 @@ from app.services.handlers.notifier import Notifier
 class SQSLogRecord:
     provider: Notifier
     response: http.Response
-    status: Optional[str] = None
+    status: Optional[ed.ExecutionDetailsSource] = None
 
     def __post_init__(self):
         if not self.status:
-            self.status = "SUCCESS" if self.response.status_code == 200 else "FAILED"
-
+            self.status = (
+                ed.ExecutionDetailsEventStatus.SUCCESS
+                if self.response.status_code == 200
+                else ed.ExecutionDetailsEventStatus.FAILED
+            )
 
 class SQSLogger(types.AsyncLogger):
     def __init__(self, sqs_client: APIClientSQS) -> None:
