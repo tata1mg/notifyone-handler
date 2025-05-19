@@ -8,6 +8,7 @@ from app.commons import http
 from app.constants import HTTPStatusCodes
 from app.services.handlers.gateway_priority import PriorityGatewaySelection
 from app.services.handlers.notifier import Notifier
+from app.service_clients.callback_handler import CallbackHandler
 
 logger = logging.getLogger()
 
@@ -71,14 +72,14 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
         cls.refresh_providers()
         cls.logger = log
 
-    # @staticmethod
-    # def _get_status(provider: SMSer, response: http.Response):
-    #     status = ed.ExecutionDetailsEventStatus.SUCCESS
-    #     if isinstance(provider, CallbackHandler):
-    #         status = ed.ExecutionDetailsEventStatus.QUEUED
-    #     if response.error or (response.status_code != 200):
-    #         status = ed.ExecutionDetailsEventStatus.FAILED
-    #     return status
+    @staticmethod
+    def _get_status(provider: Notifier, response: http.Response):
+        status = ed.ExecutionDetailsEventStatus.SUCCESS
+        if isinstance(provider, CallbackHandler):
+            status = ed.ExecutionDetailsEventStatus.QUEUED
+        if response.error or (response.status_code != 200):
+            status = ed.ExecutionDetailsEventStatus.FAILED
+        return status
 
     @classmethod
     async def notify(cls, to, message, **kwargs):
@@ -99,7 +100,7 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
             )
             provider = cls.PROVIDERS[gateway]
             response = await provider.send_notification(to, message, **kwargs)
-            # status = cls._get_status(provider, response)
+            status = cls._get_status(provider, response)
             async with cls.logger as log:
                 await log.log(
                     log_info,
@@ -110,6 +111,7 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
                         "attempt_number": n_attempts,
                         "channel": cls.CHANNEL,
                         "source": cls.SOURCE,
+                        "status": status
                     },
                 )
             if response.status_code == HTTPStatusCodes.SUCCESS.value:
