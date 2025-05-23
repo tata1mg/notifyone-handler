@@ -78,6 +78,7 @@ class Initialize:
 
     @classmethod
     def initialize_service_startup_dependencies(cls):
+        print("Initializing service startup dependencies")
         sqs = cls.config.get("SQS", {})
         auth = cls.config.get("SQS_AUTH", {})
         logging = sqs.get("PUBLISH", {}).get("LOGGING", {})

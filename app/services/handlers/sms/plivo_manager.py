@@ -141,7 +141,7 @@ class PlivoHandler(Notifier, APIClient, CallbackHandler):
         }
 
         detail = cls.__get_callback_status(webhook_status.lower())
-        status = ed.ExecutionDetails.map_status(detail)
+        status = ed.ExecutionDetails.map_sms_status(detail)
         if status == ed.ExecutionDetailsEventStatus.SUCCESS or status == ed.ExecutionDetailsEventStatus.QUEUED:
             response_dict.update({"data": {"data": {"status": webhook_status}}})
         else:

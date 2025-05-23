@@ -129,7 +129,7 @@ class SMSCountryHandler(Notifier, APIClient, CallbackHandler):
         )
 
         detail = cls.__get_callback_status(status)
-        status = ed.ExecutionDetails.map_status(detail)
+        status = ed.ExecutionDetails.map_sms_status(detail)
         async with CallbackLogger.logger as log:
             await log.log(
                 logrecord,
