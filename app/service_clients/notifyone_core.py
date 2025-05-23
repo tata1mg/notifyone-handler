@@ -1,10 +1,11 @@
-from torpedo import CONFIG, BaseApiRequest
+from torpedo import CONFIG
 from torpedo.constants import HTTPMethod
-
+from torpedo import  BaseAPIClient
+from app.service_clients.api_handler import APIClient
 from app.constants import Channels
 
 
-class NotifyOneCoreClient(BaseApiRequest):
+class NotifyOneCoreClient(BaseAPIClient):
     """
     notifyone-core service client
     """

@@ -1,6 +1,7 @@
 from enum import Enum
 
 from app.constants.sms import SmsEventStatus
+from app.constants.email import EmailEventStatus
 
 
 class ExecutionDetailsSource(str, Enum):
@@ -17,7 +18,7 @@ class ExecutionDetailsEventStatus(str, Enum):
 
 class ExecutionDetails:
     @staticmethod
-    def map_status(event_status: SmsEventStatus) -> ExecutionDetailsEventStatus:
+    def map_sms_status(event_status: SmsEventStatus) -> ExecutionDetailsEventStatus:
         status_map = {
             SmsEventStatus.SENT: ExecutionDetailsEventStatus.SUCCESS,
             SmsEventStatus.QUEUED: ExecutionDetailsEventStatus.QUEUED,
@@ -32,3 +33,22 @@ class ExecutionDetails:
         }
 
         return status_map.get(event_status, ExecutionDetailsEventStatus.SUCCESS)
+    
+    @staticmethod
+    def map_email_status(event_status: EmailEventStatus) -> ExecutionDetailsEventStatus:
+        status_map = {
+            EmailEventStatus.OPENED: ExecutionDetailsEventStatus.SUCCESS,
+            EmailEventStatus.REJECTED: ExecutionDetailsEventStatus.FAILED,
+            EmailEventStatus.SENT: ExecutionDetailsEventStatus.SUCCESS,
+            EmailEventStatus.DEFERRED: ExecutionDetailsEventStatus.PENDING,
+            EmailEventStatus.DELIVERED: ExecutionDetailsEventStatus.SUCCESS,
+            EmailEventStatus.BOUNCED: ExecutionDetailsEventStatus.FAILED,
+            EmailEventStatus.CLICKED: ExecutionDetailsEventStatus.SUCCESS,
+            EmailEventStatus.SPAM: ExecutionDetailsEventStatus.FAILED,
+            EmailEventStatus.UNSUBSCRIBED: ExecutionDetailsEventStatus.FAILED,
+            EmailEventStatus.DELAYED: ExecutionDetailsEventStatus.PENDING,
+            EmailEventStatus.COMPLAINT: ExecutionDetailsEventStatus.FAILED,
+        }
+
+        return status_map.get(event_status, ExecutionDetailsEventStatus.SUCCESS)
+
