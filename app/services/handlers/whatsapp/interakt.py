@@ -1,10 +1,12 @@
 import json
 import logging
 from typing import Any, Dict
-
+import os
 from app.commons import http
 from app.commons.logging import LogRecord
+from app.constants import whatsapp as wc
 from app.constants.channel_gateways import WhatsAppGateways
+from app.commons import execution_details as ed
 from app.constants.constants import HTTPStatusCodes
 from app.service_clients.api_handler import APIClient
 from app.service_clients.callback_handler import (CallbackHandler,
@@ -66,15 +68,26 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
             "name": name_and_language_code_data.get("name"),
             "languageCode": name_and_language_code_data.get("language_code"),
             "bodyValues": list(template_data.get("body_values")),
+            "headerValues": list(template_data.get("header_values", [])),
+            "buttonValues": template_data.get("button_values", {}),
         }
 
-        files = template_data.get("files") or list()
+        attachment_data = template_data.get("attachment_data")
 
-        if files:
+        if attachment_data and attachment_data.get("attachments"):
+            attachments = attachment_data.get("attachments", [])
             # NOTE only one file attachment is sent at time.
-            file = files[0]
-            attachments = [file["url"]]
-            filename = file["filename"]
+            first_file_attachment = str(attachments[0])
+            filename = attachment_data.get("filename")
+            """
+            In case filename is not provided we will use default file name.
+            Example : attachments = ["https://abc/xyz.pdf"]
+            Then default filename will be file.pdf
+            """
+            if not filename:
+                file_extension = os.path.splitext(first_file_attachment)[1]
+                filename = "file" + file_extension
+
             template.update({"headerValues": attachments, "fileName": filename})
 
         return template
@@ -107,7 +120,12 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
         @return A Response dict containing status_code,message,id,result etc.
         """
         try:
-            self.headers = {"Authorization": self._config.get("AUTHORIZATION")}
+            app_name = data.get('app_name')
+            app_authorizations = self._config.get("APP_AUTHORIZATIONS") 
+            authorization = self._config.get("AUTHORIZATION")
+            authorization_key = app_authorizations.get(app_name, "DEFAULT")
+            auth = authorization.get(authorization_key, authorization.get("DEFAULT"))
+            self.headers = {"Authorization": auth}
             payload = self._get_payload(phone_number=to, data=data)
             send_whatsapp_message_url = self._get_url()
             response = await self.request(
@@ -143,13 +161,13 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     def __get_callback_status(status: str):
         status_mapping = {
-            "message_api_sent": "SUCCESS",
-            "message_api_delivered": "SUCCESS",
-            "message_api_read": "SUCCESS",
-            "message_api_failed": "FAILED",
+            "message_api_sent": wc.WhatsAppEventStatus.SENT,
+            "message_api_delivered": wc.WhatsAppEventStatus.DELIVERED,
+            "message_api_read": wc.WhatsAppEventStatus.READ,
+            "message_api_failed": wc.WhatsAppEventStatus.FAILED,
         }
 
-        return status_mapping.get(status, "UNKNOWN")
+        return status_mapping.get(status, wc.WhatsAppEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
@@ -158,8 +176,9 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
         status = body.get("type")
         data = body.get("data", {})
         message = data.get("message", {})
-        status = cls.__get_callback_status(status)
+        detail = cls.__get_callback_status(status)
 
+        status = ed.ExecutionDetails.map_whatsapp_status(detail)
         response = http.Response(
             status_code=200,
             data={
@@ -180,5 +199,7 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
                     "response": response,
                     "status": status,
                     "channel": "whatsapp",
+                    "source": ed.ExecutionDetailsSource.WEBHOOK,
+                    "detail": detail,
                 },
             )

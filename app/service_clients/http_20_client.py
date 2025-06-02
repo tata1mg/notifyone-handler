@@ -4,8 +4,12 @@ import httpx
 
 
 class HTTP20Client:
-    def __init__(self, cert=None, verify=None) -> None:
-        self.client = httpx.AsyncClient(http2=True, cert=cert, verify=verify)
+    auth = None
+    params = None
+    headers = None
+
+    def __init__(self) -> None:
+        self.client = httpx.AsyncClient(http2=True)
 
     async def request(
         self,
@@ -14,11 +18,18 @@ class HTTP20Client:
         files: Dict = None,
         data: Dict = None,
         json: Dict = None,
+        headers: Dict = None,
+        params: Dict = None,
+        auth: object = None,
     ):
-        if data is not None and json is not None:
-            raise ValueError("data and json both can not be not null")
+        request_info = {}
+        if headers or self.headers:
+            request_info["headers"] = headers or self.headers
+        if auth or self.auth:
+            request_info["auth"] = auth or self.auth
+        if params or self.params:
+            request_info["params"] = params or self.params
 
-        async with self.client as client:
-            return await client.request(
-                method=method, url=url, json=json, data=data, files=files
-            )
+        return await self.client.request(
+            method=method, url=url, json=json, data=data, files=files, **request_info
+        )

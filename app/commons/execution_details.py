@@ -2,6 +2,7 @@ from enum import Enum
 
 from app.constants.sms import SmsEventStatus
 from app.constants.email import EmailEventStatus
+from app.constants.whatsapp import WhatsAppEventStatus
 
 
 class ExecutionDetailsSource(str, Enum):
@@ -48,6 +49,17 @@ class ExecutionDetails:
             EmailEventStatus.UNSUBSCRIBED: ExecutionDetailsEventStatus.FAILED,
             EmailEventStatus.DELAYED: ExecutionDetailsEventStatus.PENDING,
             EmailEventStatus.COMPLAINT: ExecutionDetailsEventStatus.FAILED,
+        }
+
+        return status_map.get(event_status, ExecutionDetailsEventStatus.SUCCESS)
+    
+    @staticmethod
+    def map_whatsapp_status(event_status: WhatsAppEventStatus) -> ExecutionDetailsEventStatus:
+        status_map = {
+            WhatsAppEventStatus.SENT: ExecutionDetailsEventStatus.SUCCESS,
+            WhatsAppEventStatus.DELIVERED: ExecutionDetailsEventStatus.SUCCESS,
+            WhatsAppEventStatus.READ: ExecutionDetailsEventStatus.SUCCESS,
+            WhatsAppEventStatus.FAILED: ExecutionDetailsEventStatus.FAILED,
         }
 
         return status_map.get(event_status, ExecutionDetailsEventStatus.SUCCESS)
