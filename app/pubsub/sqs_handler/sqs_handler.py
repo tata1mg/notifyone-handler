@@ -1,5 +1,5 @@
 import json
-
+import logging
 from commonutils.handlers.sqs import SQSHandler
 from sanic.log import logger
 
@@ -10,10 +10,12 @@ from app.services.handlers.push.handler import PushHandler
 from app.services.handlers.sms.handler import SmsHandler
 from app.services.handlers.whatsapp.handler import WhatsappHandler
 
+logger = logging.getLogger()
 
 class SMSSqsHandler(SQSHandler):
     @classmethod
     async def handle_event(cls, data):
+        print(f"SMS QUEUE MESSAGE RECEIVED: {data}")
         try:
             data = json.loads(data)
         except json.JSONDecodeError as err:
@@ -60,17 +62,31 @@ class PushSqsHandler(SQSHandler):
     @classmethod
     async def handle_event(cls, data):
         try:
+            print(f"Push QUEUE MESSAGE RECEIVED: {data}")
             data = json.loads(data)
+        
+            log_info = LogRecord(log_id=data.get("notification_log_id"))
+            data = data.pop("push_data", {})
+            print(f"Push data: {data}")
+            tokens = [
+                {
+                    "os": device.get("device_os_type"),
+                    "voip_token": device.get("voip_token"),
+                    "register_id": device.get("register_id"),
+                    "device_token": device.get("device_token"),
+                    "live_notification_token": device.get("live_notification_token"),
+                }
+                for device in data.pop("registered_devices", [])
+            ]
+            print(f"Push tokens before filtering: {tokens}")
+            to = [
+                token.get("register_id") for token in tokens if token.get("register_id")
+            ]
+            print(f"Push tokens after filtering: {to}")
+            return await PushHandler.notify(
+                to=tokens, message=data.get("body"), log_info=log_info, **data
+            )
         except json.JSONDecodeError as err:
+            print(f"Not a valid JSON, unable to decode: {err}")
             logger.error("Not a valid JSON, unable to decode: %s", err)
             raise err
-
-        log_info = LogRecord(log_id=data.get("notification_log_id"))
-        data = data.pop("push_data", {})
-        registration_ids = []
-        for device in data.pop("registered_devices", []):
-            registration_ids.append(device.get("register_id"))
-
-        return await PushHandler.notify(
-            to=registration_ids, message=data.get("body"), log_info=log_info, **data
-        )
