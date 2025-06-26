@@ -15,7 +15,6 @@ logger = logging.getLogger()
 class SMSSqsHandler(SQSHandler):
     @classmethod
     async def handle_event(cls, data):
-        print(f"SMS QUEUE MESSAGE RECEIVED: {data}")
         try:
             data = json.loads(data)
         except json.JSONDecodeError as err:
@@ -62,12 +61,10 @@ class PushSqsHandler(SQSHandler):
     @classmethod
     async def handle_event(cls, data):
         try:
-            print(f"Push QUEUE MESSAGE RECEIVED: {data}")
             data = json.loads(data)
         
             log_info = LogRecord(log_id=data.get("notification_log_id"))
             data = data.pop("push_data", {})
-            print(f"Push data: {data}")
             tokens = [
                 {
                     "os": device.get("device_os_type"),
@@ -78,15 +75,12 @@ class PushSqsHandler(SQSHandler):
                 }
                 for device in data.pop("registered_devices", [])
             ]
-            print(f"Push tokens before filtering: {tokens}")
             to = [
                 token.get("register_id") for token in tokens if token.get("register_id")
             ]
-            print(f"Push tokens after filtering: {to}")
             return await PushHandler.notify(
                 to=tokens, message=data.get("body"), log_info=log_info, **data
             )
         except json.JSONDecodeError as err:
-            print(f"Not a valid JSON, unable to decode: {err}")
             logger.error("Not a valid JSON, unable to decode: %s", err)
             raise err
