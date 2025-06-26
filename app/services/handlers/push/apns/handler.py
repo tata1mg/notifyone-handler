@@ -110,16 +110,12 @@ class APNSHandler(Notifier, HTTP20Client):
     ):
         payload = self._prepare_payload(notification, **kwargs)
         try:
-            print(f"Payload to be sent: {payload}")
-            print(f"Token for APNS: {token}")
-            print(f"Headers for APNS: {self._get_headers(**kwargs)}")
             response = await self.request(
                 "POST",
                 self._get_url(token),
                 json=payload,
                 headers=self._get_headers(**kwargs),
             )
-            print(f"Response from APNS: {response}")
             return await self.format_response(response)
         except Exception as err:
             logger.exception(
@@ -139,9 +135,6 @@ class APNSHandler(Notifier, HTTP20Client):
             image = kwargs.get("image")
             notification = push.Notification(title=title, body=message, image=image)
             token = self._get_recipient(to, **kwargs)
-            print(f"Sending push notification to token: {token}")
-            if not token:
-                print("No token found for the recipient")
             return await self.push_notification(token, notification, **kwargs)
         except Exception as err:
             logger.exception("Encountered while sending push notification %s", err)
