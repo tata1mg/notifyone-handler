@@ -85,7 +85,6 @@ class FCMHandlerV1(Notifier, APIClient):
             message_data["action"] = action
         if push_config.get("target"):
             message_data["target"] = push_config.get("target")
-        print(f"Message data: {message_data}")
         if message_data.get("type") == push.PushNotificationType.IN_APP_CALL:
             message_data.update(
                 {
@@ -100,7 +99,6 @@ class FCMHandlerV1(Notifier, APIClient):
                 apns=apns,
                 data=message_data,
             )
-        print(f"MESSAGE_DATA_TEST_LOGGER: {message_data} {register_ids}")
         return messaging.MulticastMessage(
             tokens=register_ids,
             notification=messaging.Notification(
@@ -116,21 +114,15 @@ class FCMHandlerV1(Notifier, APIClient):
     def send_push_messages(
         self, register_ids: str, notification: push.Notification, **kwargs
     ):
-        details = kwargs.get("details", None)
-        print(f"Register IDs: {register_ids}")
-        print(f"Notification: {notification}")
-        print(f"Details: {details}")
+        details = kwargs.get("details", None)        
         push_config = (details or {}).get("config", {}) or {}
         dry_run = push_config.get("dry_run", False)
         message = self._prepare_multicast_message(register_ids, notification, **kwargs)
-        print(f"Message to be sent: {message}")
-        print(f"Dry run: {dry_run}")
         try:
             response = messaging.send_each_for_multicast(
                 message,
                 dry_run=dry_run,
             )
-            print(f"Response from FCM: {response}")
             message_ids = [res.message_id for res in response.responses]
             event_ids = self.get_event_ids(message_ids)
             return {
@@ -149,7 +141,6 @@ class FCMHandlerV1(Notifier, APIClient):
             }
 
     def send_notification(self, to: List[str], message: str, **kwargs):
-        print(f"Sending notification to: {to} with message: {message}")
         to = [
             token.get("register_id") for token in to if token.get("register_id")
         ]  # Remove empty and None register_id
