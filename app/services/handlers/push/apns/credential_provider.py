@@ -15,7 +15,6 @@ class CredentialProvider:
     @classmethod
     async def init(cls, config):
         cls._config = config
-        print("Initializing CredentialProvider for APNs")
         await cls.start_refresh_token_task()
 
     @classmethod
@@ -34,14 +33,12 @@ class CredentialProvider:
 
     @classmethod
     async def _refresh_token(cls):
-        print("Starting token refresh task")
         delay = cls._config.get("REFRESH_TOKEN_DELAY")  # in seconds
 
         alg = cls._config.get("ALGORITHM")
         team_id = cls._config.get("TEAM_ID")
         key_id = cls._config.get("KEY_ID")
         secret = cls._config.get("PRIVATE_KEY")
-        print("Starting token refresh task with delay:", delay, "algorithm:", alg)
         while True:
             try:
                 token = cls._get_new_token(alg, secret, team_id, key_id)
