@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-torpedo = {editable = true, ref = "1.0.0", git = "git+ssh://git@github.com/tata1mg/torpedo.git"}
-commonutils = {editable = true, ref = "1.0.0", git = "git+ssh://git@github.com/tata1mg/commonutils.git"}
+torpedo = {editable = true, ref = "1.0.0", git = "https://github.com/tata1mg/torpedo"}
+commonutils = {editable = true, ref = "1.0.0", git = "https://github.com/tata1mg/commonutils"}
 httpx = {extras = ["http2"], version = "0.23.3"}
 aiobotocore = ">=2.5.0"
 aiohttp = ">=3.8.4"
