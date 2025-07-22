@@ -9,3 +9,13 @@ class VariableMappingKeys(Enum):
     BODY = "body"
     HEADER = "header"
     BUTTON = "button"
+
+class WhatsAppEventStatus(str, Enum):
+    SENT = "SENT"
+    DELIVERED = "DELIVERED"
+    READ = "READ"
+    FAILED = "FAILED"
+    UNKNOWN = "UNKNOWN"
+
+    def __str__(self) -> str:
+        return self.value
