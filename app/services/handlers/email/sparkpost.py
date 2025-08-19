@@ -6,7 +6,7 @@ from urllib import parse
 from aiohttp import ClientResponse
 
 from app.commons import aws, http
-from app.constants import email as ec
+from app.constants import email as email_constant
 from app.commons import execution_details as ed
 from app.commons.logging.types import LogRecord
 from app.constants import HTTPStatusCodes
@@ -156,19 +156,19 @@ class SparkPostHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     def __get_callback_status(status: str):
         status_map = {
-            "bounce": ec.EmailEventStatus.BOUNCED,
-            "delivery": ec.EmailEventStatus.DELIVERED,
-            "injection": ec.EmailEventStatus.SENT,
-            "out_of_band": ec.EmailEventStatus.REJECTED,
-            "delay": ec.EmailEventStatus.DELAYED,
-            "spam_complaint": ec.EmailEventStatus.SPAM,
-            "policy_rejection": ec.EmailEventStatus.REJECTED,
-            "generation_failure": ec.EmailEventStatus.REJECTED,
-            "generation_rejection": ec.EmailEventStatus.REJECTED,
-            "open": ec.EmailEventStatus.OPENED,
-            "click": ec.EmailEventStatus.CLICKED,
+            "bounce": email_constant.EmailEventStatus.BOUNCED,
+            "delivery": email_constant.EmailEventStatus.DELIVERED,
+            "injection": email_constant.EmailEventStatus.SENT,
+            "out_of_band": email_constant.EmailEventStatus.REJECTED,
+            "delay": email_constant.EmailEventStatus.DELAYED,
+            "spam_complaint": email_constant.EmailEventStatus.SPAM,
+            "policy_rejection": email_constant.EmailEventStatus.REJECTED,
+            "generation_failure": email_constant.EmailEventStatus.REJECTED,
+            "generation_rejection": email_constant.EmailEventStatus.REJECTED,
+            "open": email_constant.EmailEventStatus.OPENED,
+            "click": email_constant.EmailEventStatus.CLICKED,
         }
-        return status_map.get(status, ec.EmailEventStatus.UNKNOWN)
+        return status_map.get(status, email_constant.EmailEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
