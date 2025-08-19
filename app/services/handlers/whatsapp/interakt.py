@@ -4,7 +4,7 @@ from typing import Any, Dict
 import os
 from app.commons import http
 from app.commons.logging import LogRecord
-from app.constants import whatsapp as wc
+from app.constants.callbacks import WhatsAppEventStatus
 from app.constants.channel_gateways import WhatsAppGateways
 from app.commons import execution_details as ed
 from app.constants.constants import HTTPStatusCodes
@@ -71,26 +71,38 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
             "headerValues": list(template_data.get("header_values", [])),
             "buttonValues": template_data.get("button_values", {}),
         }
-
         attachment_data = template_data.get("attachment_data")
 
-        if attachment_data and attachment_data.get("attachments"):
-            attachments = attachment_data.get("attachments", [])
-            # NOTE only one file attachment is sent at time.
-            first_file_attachment = str(attachments[0])
-            filename = attachment_data.get("filename")
-            """
-            In case filename is not provided we will use default file name.
-            Example : attachments = ["https://abc/xyz.pdf"]
-            Then default filename will be file.pdf
-            """
-            if not filename:
-                file_extension = os.path.splitext(first_file_attachment)[1]
-                filename = "file" + file_extension
-
-            template.update({"headerValues": attachments, "fileName": filename})
+        if attachment_data:
+            self._add_attachment_to_template(template, attachment_data)
 
         return template
+
+    def _add_attachment_to_template(self, template, attachment_data):
+        """Add attachment configuration to template"""
+        attachments = attachment_data.get("attachments", [])
+        if not attachments:
+            return
+        
+        # Use only the first attachment
+        first_attachment = str(attachments[0])
+        filename = self._get_attachment_filename(attachment_data, first_attachment)
+        
+        template.update({
+            "headerValues": attachments,
+            "fileName": filename
+        })
+
+    def _get_attachment_filename(self, attachment_data, attachment_url):
+        """Get filename for attachment, with fallback to generated name"""
+        filename = attachment_data.get("filename")
+        
+        if filename:
+            return filename
+        
+        # Generate default filename from URL extension
+        file_extension = os.path.splitext(attachment_url)[1] or ".txt"
+        return f"file{file_extension}"
 
     @staticmethod
     def _get_name_and_language_code(template: str):
@@ -161,13 +173,13 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     def __get_callback_status(status: str):
         status_mapping = {
-            "message_api_sent": wc.WhatsAppEventStatus.SENT,
-            "message_api_delivered": wc.WhatsAppEventStatus.DELIVERED,
-            "message_api_read": wc.WhatsAppEventStatus.READ,
-            "message_api_failed": wc.WhatsAppEventStatus.FAILED,
+            "message_api_sent": WhatsAppEventStatus.SENT,
+            "message_api_delivered": WhatsAppEventStatus.DELIVERED,
+            "message_api_read": WhatsAppEventStatus.READ,
+            "message_api_failed": WhatsAppEventStatus.FAILED,
         }
 
-        return status_mapping.get(status, wc.WhatsAppEventStatus.UNKNOWN)
+        return status_mapping.get(status, WhatsAppEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
