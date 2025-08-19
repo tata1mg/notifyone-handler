@@ -69,36 +69,61 @@ class FCMHandlerV1(Notifier, APIClient):
     ):
         details = kwargs.get("details")
         push_config = (details or {}).pop("config", {}) or {}
-        android = None
-        apns = None
-        if push_config:
-            android = self._get_android_config(push_config)
-            apns = self._get_apns_config(push_config)
-        kwargs.pop("details", None)
+         # Build platform-specific configs
+        android_config = self._get_android_config(push_config) if push_config else None
+        apns_config = self._get_apns_config(push_config) if push_config else None
+    
+
+        message_data = self._build_message_data(kwargs, push_config, details)
         if kwargs.get("type") == push.PushNotificationType.IN_APP_CALL:
-            kwargs["details"] = json.dumps(details)
-        message_data = {"provider": "FCM", **kwargs}
+            return self._create_data_only_message(
+                register_ids, android_config, apns_config, message_data, notification
+            )
+    
+        # Handle standard notifications
+        return self._create_notification_message(
+            register_ids, android_config, apns_config, message_data, notification
+        )
+    
+    def _build_message_data(self, kwargs, push_config, details):
+        """Build the data payload for the message"""
+        # Clean up kwargs
+        clean_kwargs = {k: v for k, v in kwargs.items() if k != "details"}
+        
+        # Add special handling for in-app calls
+        if clean_kwargs.get("type") == push.PushNotificationType.IN_APP_CALL:
+            clean_kwargs["details"] = json.dumps(details)
+        
+        # Build base message data
+        message_data = {"provider": "FCM", **clean_kwargs}
+        
+        # Add action if present
         if push_config.get("action"):
-            action = json.dumps(
-                push_config.get("action")
-            )  # data should not contain dict
-            message_data["action"] = action
+            message_data["action"] = json.dumps(push_config["action"])
+        
+        # Add target if present
         if push_config.get("target"):
-            message_data["target"] = push_config.get("target")
-        if message_data.get("type") == push.PushNotificationType.IN_APP_CALL:
-            message_data.update(
-                {
-                    "title": notification.title,
-                    "body": notification.body,
-                    "image": notification.image,
-                }
-            )
-            return messaging.MulticastMessage(
-                tokens=register_ids,
-                android=android,
-                apns=apns,
-                data=message_data,
-            )
+            message_data["target"] = push_config["target"]
+        
+        return message_data
+    
+    def _create_data_only_message(self, register_ids, android, apns, message_data, notification):
+        """Create message with data only (for in-app calls)"""
+        message_data.update({
+            "title": notification.title,
+            "body": notification.body,
+            "image": notification.image,
+        })
+        
+        return messaging.MulticastMessage(
+            tokens=register_ids,
+            android=android,
+            apns=apns,
+            data=message_data,
+        )
+
+    def _create_notification_message(self, register_ids, android, apns, message_data, notification):
+        """Create message with notification payload (standard notifications)"""
         return messaging.MulticastMessage(
             tokens=register_ids,
             notification=messaging.Notification(
@@ -110,6 +135,7 @@ class FCMHandlerV1(Notifier, APIClient):
             apns=apns,
             data=message_data,
         )
+
 
     def send_push_messages(
         self, register_ids: str, notification: push.Notification, **kwargs
