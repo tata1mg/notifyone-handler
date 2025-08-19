@@ -1,7 +1,6 @@
 from torpedo import CONFIG, BaseApiRequest
 from torpedo.constants import HTTPMethod
 from app.constants import Channels
-from app.constants import Channels
 
 
 class NotifyOneCoreClient(BaseApiRequest):
