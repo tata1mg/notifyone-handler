@@ -6,7 +6,7 @@ from app.commons.http import Response
 from app.commons.logging import LogRecord
 from app.constants.channel_gateways import SmsGateways
 from app.commons import execution_details as ed
-from app.constants import sms as sc
+from app.constants import sms as sms_constant
 from app.constants.constants import HTTPStatusCodes, SMSSenderConstant
 from app.service_clients.api_handler import APIClient
 from app.service_clients.callback_handler import (CallbackHandler,
@@ -103,18 +103,18 @@ class SMSCountryHandler(Notifier, APIClient, CallbackHandler):
         """
 
         status_map = {
-            0: sc.SmsEventStatus.QUEUED,
-            1: sc.SmsEventStatus.ACCEPTED,
-            2: sc.SmsEventStatus.UNDELIVERED,
-            3: sc.SmsEventStatus.DELIVERED,
-            4: sc.SmsEventStatus.EXPIRED,
-            8: sc.SmsEventStatus.REJECTED,
-            9: sc.SmsEventStatus.SENT,
-            10: sc.SmsEventStatus.OPT_OUT,
-            11: sc.SmsEventStatus.INVALID_NUMBER,
+            0: sms_constant.SmsEventStatus.QUEUED,
+            1: sms_constant.SmsEventStatus.ACCEPTED,
+            2: sms_constant.SmsEventStatus.UNDELIVERED,
+            3: sms_constant.SmsEventStatus.DELIVERED,
+            4: sms_constant.SmsEventStatus.EXPIRED,
+            8: sms_constant.SmsEventStatus.REJECTED,
+            9: sms_constant.SmsEventStatus.SENT,
+            10: sms_constant.SmsEventStatus.OPT_OUT,
+            11: sms_constant.SmsEventStatus.INVALID_NUMBER,
         }
 
-        return status_map.get(int(status), sc.SmsEventStatus.UNKNOWN)
+        return status_map.get(int(status), sms_constant.SmsEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
