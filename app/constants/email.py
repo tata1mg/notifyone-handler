@@ -4,8 +4,8 @@ from commonutils.utils import CustomEnum
 
 
 class MailSenderConstant(Enum):
-    SparkPost = "spark_post"
-    AWS_SES = "aws_ses"
+    SparkPost = "SPARK_POST"
+    AWS_SES = "AWS_SES"
 
 
 class EventType(Enum):
