@@ -137,6 +137,7 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
             authorization = self._config.get("AUTHORIZATION")
             authorization_key = app_authorizations.get(app_name, "DEFAULT")
             auth = authorization.get(authorization_key, authorization.get("DEFAULT"))
+            self.headers = {"Authorization": auth}
             payload = self._get_payload(phone_number=to, data=data)
             send_whatsapp_message_url = self._get_url()
             response = await self.request(
