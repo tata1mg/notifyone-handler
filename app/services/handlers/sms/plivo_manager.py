@@ -1,16 +1,20 @@
+import logging
 from typing import Any, Dict
 
 from aiohttp import BasicAuth
 
 from app.commons.http import Response
 from app.commons.logging import LogRecord
+from app.commons import execution_details as ed
 from app.constants.channel_gateways import SmsGateways
 from app.constants.constants import HTTPStatusCodes
 from app.service_clients.api_handler import APIClient
 from app.service_clients.callback_handler import (CallbackHandler,
                                                   CallbackLogger)
 from app.services.handlers.notifier import Notifier
+from app.constants import sms as sc
 
+logger = logging.getLogger()
 
 class PlivoHandler(Notifier, APIClient, CallbackHandler):
     __provider__ = SmsGateways.PLIVO.value
@@ -81,6 +85,7 @@ class PlivoHandler(Notifier, APIClient, CallbackHandler):
         try:
             response = await self.request(method="POST", path=url, data=values)
             result = await response.json()
+            await response.release()
             if str(response.status).startswith("20"):
                 response.job_id = self.extract_job_id(result)
                 if response.job_id is not None:
@@ -105,36 +110,46 @@ class PlivoHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     def __get_callback_status(status: str):
         status_map = {
-            "queued": "SUCCESS",
-            "sent": "SUCCESS",
-            "failed": "FAILED",
-            "delivered": "SUCCESS",
-            "undelivered": "FAILED",
-            "rejected": "FAILED",
+            "queued": sc.SmsEventStatus.QUEUED,
+            "sent": sc.SmsEventStatus.SENT,
+            "failed": sc.SmsEventStatus.FAILED,
+            "delivered": sc.SmsEventStatus.DELIVERED,
+            "undelivered": sc.SmsEventStatus.UNDELIVERED,
+            "rejected": sc.SmsEventStatus.REJECTED,
         }
 
-        return status_map.get(status, "UNKNOWN")
+        return status_map.get(status, sc.SmsEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
         logrecord = LogRecord(log_id="-1")
         body = data.get("body")
-        status = body.get("Status")[0]
-        if isinstance(status, str):
-            status = cls.__get_callback_status(status.lower())
+        webhook_status = body.get("Status")[0]
+        event_id = body.get("MessageUUID")[0]
+        if not isinstance(webhook_status, str):
+            logger.error(
+                "Expected callback status for %s to be of type string but found: %s",
+                event_id,
+                webhook_status,
+            )
+            return
+
         response_dict = {
             "status_code": HTTPStatusCodes.SUCCESS.value,
-            "event_id": body.get("MessageUUID")[0],
+            "event_id": event_id,
             "meta": data,
         }
-        if status == "SUCCESS":
-            response_dict.update({"data": {"data": {"status": body.get("Status")[0]}}})
+
+        detail = cls.__get_callback_status(webhook_status.lower())
+        status = ed.ExecutionDetails.map_sms_status(detail)
+        if status == ed.ExecutionDetailsEventStatus.SUCCESS or status == ed.ExecutionDetailsEventStatus.QUEUED:
+            response_dict.update({"data": {"data": {"status": webhook_status}}})
         else:
             response_dict.update(
                 {
                     "error": {
                         "error": {
-                            "status": body.get("Status")[0],
+                            "status": webhook_status,
                             "error_code": body.get("ErrorCode")[0],
                         }
                     }
@@ -149,5 +164,7 @@ class PlivoHandler(Notifier, APIClient, CallbackHandler):
                     "response": response,
                     "status": status,
                     "channel": "sms",
+                    "source": ed.ExecutionDetailsSource.WEBHOOK,
+                    "detail": detail,
                 },
             )

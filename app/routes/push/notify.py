@@ -26,15 +26,21 @@ push_notify_bp = PushBlueprint("notify_push")
 )
 async def notify(request: Request):
     data = request.json
-    to = data.pop("to")
-    message = data.pop("body")
     log_info = LogRecord(log_id=data.get("notification_log_id"))
-    registration_ids = []
-    for device in data.pop("registered_devices", []):
-        registration_ids.append(device.get("register_id"))
+    data = data.pop("push_data", {})
+    tokens = [
+        {
+            "os": device.get("device_os_type"),
+            "voip_token": device.get("voip_token"),
+            "register_id": device.get("register_id"),
+            "device_token": device.get("device_token"),
+            "live_notification_token": device.get("live_notification_token"),
+        }
+        for device in data.pop("registered_devices", [])
+    ]
 
     provider, response = await PushHandler.notify(
-        to, message, log_info=log_info, **data
+        to=tokens, message=data.get("body"), log_info=log_info, **data
     )
 
     return json(

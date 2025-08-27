@@ -6,7 +6,7 @@ from commonutils.handlers.sqs import SQSHandler
 
 from app.commons.logging.sqs import SQSAioLogger
 from app.constants.config import Config
-from app.pubsub.sqs.sms_sqs import APIClientSQS
+from app.pubsub.sqs.sqs import APIClientSQS
 from app.pubsub.sqs_handler.sqs_handler import (EmailSqsHandler,
                                                 PushSqsHandler, SMSSqsHandler,
                                                 WhatsappSqsHandler)
@@ -15,6 +15,7 @@ from app.services.handlers.email.handler import EmailHandler
 from app.services.handlers.push.handler import PushHandler
 from app.services.handlers.sms.handler import SmsHandler
 from app.services.handlers.whatsapp.handler import WhatsappHandler
+from app.services.handlers.push.apns import APNSCredentialProvider
 
 
 class Initialize:
@@ -25,6 +26,11 @@ class Initialize:
         "PUSH": {"client": APIClientSQS, "handler": PushSqsHandler},
         "WHATSAPP": {"client": APIClientSQS, "handler": WhatsappSqsHandler},
     }
+
+    @classmethod
+    async def initialize_startup_tasks(cls):
+        apns_config = cls.config.get("APNS")
+        await APNSCredentialProvider.init(apns_config)
 
     @classmethod
     async def initialize_sqs_subscribers(cls):

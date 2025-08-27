@@ -85,6 +85,7 @@ class FCMHandler(Notifier, APIClient):
                 error={
                     "error": f"Encountered error while sending push noitifcation {str(err)}"
                 },
+                meta=str(err),
             )
 
     async def send_notification(self, to: List[str], message: str, **kwargs):
