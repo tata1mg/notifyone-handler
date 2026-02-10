@@ -6,6 +6,8 @@ from urllib import parse
 from aiohttp import ClientResponse
 
 from app.commons import aws, http
+from app.constants import email as email_constant
+from app.commons import execution_details as ed
 from app.commons.logging.types import LogRecord
 from app.constants import HTTPStatusCodes
 from app.constants.channel_gateways import EmailGateways
@@ -86,6 +88,7 @@ class SparkPostHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     async def format_response(response: ClientResponse):
         json = await response.json()
+        await response.release()
         if http.is_success(response.status):
             response = {
                 "status_code": HTTPStatusCodes.SUCCESS.value,
@@ -153,18 +156,19 @@ class SparkPostHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     def __get_callback_status(status: str):
         status_map = {
-            "bounce": "FAILED",
-            "delivery": "SUCCESS",
-            "injection": "SUCCESS",
-            "out_of_band": "FAILED",
-            "delay": "FAILED",
-            "policy_rejection": "FAILED",
-            "generation_failure": "FAILED",
-            "generation_rejection": "FAILED",
-            "open": "SUCCESS",
-            "click": "SUCCESS",
+            "bounce": email_constant.EmailEventStatus.BOUNCED,
+            "delivery": email_constant.EmailEventStatus.DELIVERED,
+            "injection": email_constant.EmailEventStatus.SENT,
+            "out_of_band": email_constant.EmailEventStatus.REJECTED,
+            "delay": email_constant.EmailEventStatus.DELAYED,
+            "spam_complaint": email_constant.EmailEventStatus.SPAM,
+            "policy_rejection": email_constant.EmailEventStatus.REJECTED,
+            "generation_failure": email_constant.EmailEventStatus.REJECTED,
+            "generation_rejection": email_constant.EmailEventStatus.REJECTED,
+            "open": email_constant.EmailEventStatus.OPENED,
+            "click": email_constant.EmailEventStatus.CLICKED,
         }
-        return status_map.get(status, "UNKNOWN")
+        return status_map.get(status, email_constant.EmailEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
@@ -193,14 +197,15 @@ class SparkPostHandler(Notifier, APIClient, CallbackHandler):
                     message.get("transmission_id"),
                 )
                 continue
-            status = cls.__get_callback_status(type.lower())
+            detail = cls.__get_callback_status(type.lower())
             response_dict = {
                 "status_code": HTTPStatusCodes.SUCCESS.value,
                 "event_id": message.get("transmission_id"),
                 "meta": data,
             }
 
-            if status == "SUCCESS":
+            status = ed.ExecutionDetails.map_email_status(detail)
+            if status == ed.ExecutionDetailsEventStatus.SUCCESS:
                 response_dict.update({"data": {"data": {"status": type}}})
             else:
                 response_dict.update(
@@ -223,5 +228,7 @@ class SparkPostHandler(Notifier, APIClient, CallbackHandler):
                         "response": response,
                         "status": status,
                         "channel": "email",
+                        "source": ed.ExecutionDetailsSource.WEBHOOK,
+                        "detail": detail,
                     },
                 )

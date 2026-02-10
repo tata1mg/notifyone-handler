@@ -1,10 +1,12 @@
 import json
 import logging
 from typing import Any, Dict
-
+import os
 from app.commons import http
 from app.commons.logging import LogRecord
+from app.constants.callbacks import WhatsAppEventStatus
 from app.constants.channel_gateways import WhatsAppGateways
+from app.commons import execution_details as ed
 from app.constants.constants import HTTPStatusCodes
 from app.service_clients.api_handler import APIClient
 from app.service_clients.callback_handler import (CallbackHandler,
@@ -66,18 +68,41 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
             "name": name_and_language_code_data.get("name"),
             "languageCode": name_and_language_code_data.get("language_code"),
             "bodyValues": list(template_data.get("body_values")),
+            "headerValues": list(template_data.get("header_values", [])),
+            "buttonValues": template_data.get("button_values", {}),
         }
+        attachment_data = template_data.get("attachment_data")
 
-        files = template_data.get("files") or list()
-
-        if files:
-            # NOTE only one file attachment is sent at time.
-            file = files[0]
-            attachments = [file["url"]]
-            filename = file["filename"]
-            template.update({"headerValues": attachments, "fileName": filename})
+        if attachment_data:
+            self._add_attachment_to_template(template, attachment_data)
 
         return template
+
+    def _add_attachment_to_template(self, template, attachment_data):
+        """Add attachment configuration to template"""
+        attachments = attachment_data.get("attachments", [])
+        if not attachments:
+            return
+        
+        # Use only the first attachment
+        first_attachment = str(attachments[0])
+        filename = self._get_attachment_filename(attachment_data, first_attachment)
+        
+        template.update({
+            "headerValues": attachments,
+            "fileName": filename
+        })
+
+    def _get_attachment_filename(self, attachment_data, attachment_url):
+        """Get filename for attachment, with fallback to generated name"""
+        filename = attachment_data.get("filename")
+        
+        if filename:
+            return filename
+        
+        # Generate default filename from URL extension
+        file_extension = os.path.splitext(attachment_url)[1] or ".txt"
+        return f"file{file_extension}"
 
     @staticmethod
     def _get_name_and_language_code(template: str):
@@ -107,7 +132,12 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
         @return A Response dict containing status_code,message,id,result etc.
         """
         try:
-            self.headers = {"Authorization": self._config.get("AUTHORIZATION")}
+            app_name = data.get('app_name')
+            app_authorizations = self._config.get("APP_AUTHORIZATIONS") 
+            authorization = self._config.get("AUTHORIZATION")
+            authorization_key = app_authorizations.get(app_name, "DEFAULT")
+            auth = authorization.get(authorization_key, authorization.get("DEFAULT"))
+            self.headers = {"Authorization": auth}
             payload = self._get_payload(phone_number=to, data=data)
             send_whatsapp_message_url = self._get_url()
             response = await self.request(
@@ -143,13 +173,13 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
     @staticmethod
     def __get_callback_status(status: str):
         status_mapping = {
-            "message_api_sent": "SUCCESS",
-            "message_api_delivered": "SUCCESS",
-            "message_api_read": "SUCCESS",
-            "message_api_failed": "FAILED",
+            "message_api_sent": WhatsAppEventStatus.SENT,
+            "message_api_delivered": WhatsAppEventStatus.DELIVERED,
+            "message_api_read": WhatsAppEventStatus.READ,
+            "message_api_failed": WhatsAppEventStatus.FAILED,
         }
 
-        return status_mapping.get(status, "UNKNOWN")
+        return status_mapping.get(status, WhatsAppEventStatus.UNKNOWN)
 
     @classmethod
     async def handle_callback(cls, data: Dict[str, Any]):
@@ -158,8 +188,9 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
         status = body.get("type")
         data = body.get("data", {})
         message = data.get("message", {})
-        status = cls.__get_callback_status(status)
+        detail = cls.__get_callback_status(status)
 
+        status = ed.ExecutionDetails.map_whatsapp_status(detail)
         response = http.Response(
             status_code=200,
             data={
@@ -180,5 +211,7 @@ class InteraktHandler(Notifier, APIClient, CallbackHandler):
                     "response": response,
                     "status": status,
                     "channel": "whatsapp",
+                    "source": ed.ExecutionDetailsSource.WEBHOOK,
+                    "detail": detail,
                 },
             )

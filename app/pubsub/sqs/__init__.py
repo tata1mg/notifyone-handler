@@ -1,1 +1,1 @@
-from .sms_sqs import APIClientSQS
+from .sqs import APIClientSQS

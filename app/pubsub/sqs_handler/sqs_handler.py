@@ -1,5 +1,5 @@
 import json
-
+import logging
 from commonutils.handlers.sqs import SQSHandler
 from sanic.log import logger
 
@@ -10,6 +10,7 @@ from app.services.handlers.push.handler import PushHandler
 from app.services.handlers.sms.handler import SmsHandler
 from app.services.handlers.whatsapp.handler import WhatsappHandler
 
+logger = logging.getLogger()
 
 class SMSSqsHandler(SQSHandler):
     @classmethod
@@ -61,16 +62,25 @@ class PushSqsHandler(SQSHandler):
     async def handle_event(cls, data):
         try:
             data = json.loads(data)
+        
+            log_info = LogRecord(log_id=data.get("notification_log_id"))
+            data = data.pop("push_data", {})
+            tokens = [
+                {
+                    "os": device.get("device_os_type"),
+                    "voip_token": device.get("voip_token"),
+                    "register_id": device.get("register_id"),
+                    "device_token": device.get("device_token"),
+                    "live_notification_token": device.get("live_notification_token"),
+                }
+                for device in data.pop("registered_devices", [])
+            ]
+            to = [
+                token.get("register_id") for token in tokens if token.get("register_id")
+            ]
+            return await PushHandler.notify(
+                to=tokens, message=data.get("body"), log_info=log_info, **data
+            )
         except json.JSONDecodeError as err:
             logger.error("Not a valid JSON, unable to decode: %s", err)
             raise err
-
-        log_info = LogRecord(log_id=data.get("notification_log_id"))
-        data = data.pop("push_data", {})
-        registration_ids = []
-        for device in data.pop("registered_devices", []):
-            registration_ids.append(device.get("register_id"))
-
-        return await PushHandler.notify(
-            to=registration_ids, message=data.get("body"), log_info=log_info, **data
-        )
