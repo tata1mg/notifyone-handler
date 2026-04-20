@@ -1,4 +1,11 @@
+import logging
 from abc import ABC, abstractmethod
+
+logger = logging.getLogger(__name__)
+
+
+class NoGatewayPriorityConfigured(Exception):
+    """Raised when a channel has no gateway priority configured."""
 
 
 class PriorityGatewaySelection(ABC):
@@ -39,15 +46,30 @@ class PriorityGatewaySelection(ABC):
 
         """
         priority_logic_expression = cls.get_priority_logic()
-        current_priority = cls.get_default_priority()
+        default_priority = cls.get_default_priority() or []
+        current_priority = list(default_priority)
         if priority_logic_expression:
             # execute the priority logic to get the priority order of gateways
             try:
                 # Never delete the 'data' declaration below. It is used in the eval statement.
                 data = request_data
                 current_priority = eval(priority_logic_expression)
-            except Exception:
-                # Log the exception and fallback to default priority order
-                pass
-        total_gateways = min(len(cls.get_default_priority()), len(current_priority))
+            except Exception as exc:
+                logger.warning(
+                    "Priority logic evaluation failed for channel %s; falling back to default priority. Error: %s",
+                    cls.__name__,
+                    exc,
+                )
+                current_priority = list(default_priority)
+
+        if not current_priority or not default_priority:
+            logger.error(
+                "No gateway priority configured for channel %s; cannot select a gateway.",
+                cls.__name__,
+            )
+            raise NoGatewayPriorityConfigured(
+                f"No gateway priority configured for channel {cls.__name__}"
+            )
+
+        total_gateways = min(len(default_priority), len(current_priority))
         return current_priority[n_attempts % total_gateways]

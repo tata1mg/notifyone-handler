@@ -4,7 +4,10 @@ from typing import Dict
 
 from app.commons.logging.types import AsyncLoggerContextCreator, LogRecord
 from app.constants import HTTPStatusCodes
-from app.services.handlers.gateway_priority import PriorityGatewaySelection
+from app.services.handlers.gateway_priority import (
+    NoGatewayPriorityConfigured,
+    PriorityGatewaySelection,
+)
 from app.services.handlers.notifier import Notifier
 
 logger = logging.getLogger()
@@ -81,10 +84,22 @@ class AbstractHandler(PriorityGatewaySelection, ABC):
         # If log_info is not present use log_id as `-1``
         log_info = kwargs.pop("log_info", LogRecord(log_id="-1"))
         provider, response = None, None
-        for n_attempts in range(cls.ENABLED_GATEWAYS_COUNT):
-            gateway = cls.select_gateway(
-                n_attempts, cls._get_priority_logic_data(to, **kwargs)
+        if not cls.ENABLED_GATEWAYS_COUNT:
+            logger.error(
+                "No gateways enabled for channel %s; cannot send notification.",
+                cls.CHANNEL,
             )
+            return provider, response
+        for n_attempts in range(cls.ENABLED_GATEWAYS_COUNT):
+            try:
+                gateway = cls.select_gateway(
+                    n_attempts, cls._get_priority_logic_data(to, **kwargs)
+                )
+            except NoGatewayPriorityConfigured as exc:
+                logger.error(
+                    "Skipping send for channel %s: %s", cls.CHANNEL, exc,
+                )
+                return provider, response
             provider = cls.PROVIDERS[gateway]
             response = await provider.send_notification(to, message, **kwargs)
             async with cls.logger as log:
