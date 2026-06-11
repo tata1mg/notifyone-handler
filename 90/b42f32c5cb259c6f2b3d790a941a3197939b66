@@ -1,0 +1,19 @@
+tests/unit/test_kafka_wrapper.py
+  s_2d1432d0b17077::t_2621cbfa7644f2 6,17-39,126,145,170,206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "90b42f32c5cb259c6f2b3d790a941a3197939b66",
+  "prompts": {},
+  "sessions": {
+    "s_2d1432d0b17077": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f5eacc05-337b-4a1b-8ce6-78a56574fb97",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Prashant Mishra <prashantmishra@L9KXW927K6local-781.local>"
+    }
+  }
+}
