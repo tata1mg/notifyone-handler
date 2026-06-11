@@ -89,6 +89,7 @@ def _make_mock_consumer(msgs):
     mock_consumer.start = AsyncMock()
     mock_consumer.stop = AsyncMock()
     mock_consumer.commit = AsyncMock()
+    mock_consumer.seek = MagicMock()  # synchronous per aiokafka==0.10.0 API
     mock_consumer.__aiter__ = lambda self: _AsyncIter(msgs)
     return mock_consumer
 
@@ -143,10 +144,12 @@ async def test_subscribe_all_calls_handler_with_decoded_data(kafka_config):
 
 @pytest.mark.asyncio
 async def test_subscribe_all_retry_then_skip_after_max_attempts(kafka_config):
-    """After MAX_RETRY_ATTEMPTS failures the message is committed (skipped)."""
+    """After MAX_RETRY_ATTEMPTS failures the message is committed (skipped).
+    handler.handle_event must be called exactly MAX_RETRY_ATTEMPTS (3) times."""
     cfg = {"KAFKA": {"BOOTSTRAP_SERVERS": "localhost:9092", "MAX_RETRY_ATTEMPTS": 3}}
     body = json.dumps({"x": 1})
-    # Same offset = same logical message, delivered 3 times to reach threshold
+    # Same offset = same logical message; inject 3 copies to simulate the seek()
+    # re-delivery that occurs after each failure below the threshold.
     msgs = [
         _make_mock_msg(body.encode("utf-8"), partition=0, offset=1),
         _make_mock_msg(body.encode("utf-8"), partition=0, offset=1),
@@ -169,5 +172,40 @@ async def test_subscribe_all_retry_then_skip_after_max_attempts(kafka_config):
             max_no_of_messages=5,
         )
 
+    # handler must be called exactly MAX_RETRY_ATTEMPTS times
+    assert handler.handle_event.call_count == 3
     # After 3 failures, must commit exactly once to skip poison-pill
     mock_consumer.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_subscribe_all_seek_called_on_failure_below_threshold(kafka_config):
+    """consumer.seek() is called with the correct TopicPartition and offset when
+    handle_event raises and retry_count is below MAX_RETRY_ATTEMPTS."""
+    cfg = {"KAFKA": {"BOOTSTRAP_SERVERS": "localhost:9092", "MAX_RETRY_ATTEMPTS": 3}}
+    body = json.dumps({"x": 1})
+    # Only one delivery — count 1 < threshold 3
+    msg = _make_mock_msg(body.encode("utf-8"), partition=2, offset=99, topic="test-topic")
+    mock_consumer = _make_mock_consumer([msg])
+
+    handler = MagicMock()
+    handler.handle_event = AsyncMock(side_effect=Exception("transient error"))
+
+    with patch.object(_kafka_wrapper_mod, "AIOKafkaProducer"), \
+         patch.object(_kafka_wrapper_mod, "AIOKafkaConsumer") as MockConsumer, \
+         patch.object(_kafka_wrapper_mod, "TopicPartition") as MockTP:
+        MockConsumer.return_value = mock_consumer
+
+        wrapper = KafkaWrapper(config=cfg)
+        await wrapper.subscribe_all(
+            handler,
+            topic_name="test-topic",
+            group_id="ns-handler-sms",
+            max_no_of_messages=5,
+        )
+
+    # No commit — message is below threshold
+    mock_consumer.commit.assert_not_called()
+    # seek() must be called to reschedule re-delivery within the same session
+    mock_consumer.seek.assert_called_once()
+    MockTP.assert_called_once_with("test-topic", 2)  # topic_name, partition

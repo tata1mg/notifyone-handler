@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
+from aiokafka import AIOKafkaProducer, AIOKafkaConsumer, TopicPartition
 
 logger = logging.getLogger(__name__)
 
@@ -56,16 +56,17 @@ class KafkaWrapper:
         try:
             async for msg in consumer:
                 msg_key = (msg.partition, msg.offset)
+                # Increment exactly once per delivery, before any handler call.
+                retry_count = retry_counts.get(msg_key, 0) + 1
+                retry_counts[msg_key] = retry_count
                 try:
                     data = msg.value.decode("utf-8")
-                    retry_count = retry_counts.get(msg_key, 0) + 1
-                    retry_counts[msg_key] = retry_count
                     result = await handler.handle_event(data)
                     await consumer.commit()
                     retry_counts.pop(msg_key, None)
                 except Exception as e:
-                    retry_count = retry_counts.get(msg_key, 0) + 1
-                    retry_counts[msg_key] = retry_count
+                    # Read the already-incremented counter — do not increment again.
+                    retry_count = retry_counts[msg_key]
                     if retry_count >= self.max_retry_attempts:
                         logger.error(
                             "Dead-lettering message on topic %s partition %d offset %d after %d attempts: %s",
@@ -78,6 +79,11 @@ class KafkaWrapper:
                         await consumer.commit()
                         retry_counts.pop(msg_key, None)
                     else:
+                        # Seek back so the message is re-fetched on the next
+                        # loop iteration; aiokafka.seek() is synchronous.
+                        consumer.seek(
+                            TopicPartition(topic_name, msg.partition), msg.offset
+                        )
                         logger.exception(
                             "Error processing message from Kafka topic %s (attempt %d): %s",
                             topic_name,
