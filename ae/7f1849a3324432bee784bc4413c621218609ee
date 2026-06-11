@@ -1,0 +1,19 @@
+.github/workflows/python-app.yml
+  s_a0b4872f270ab7::t_aed5f9c60d4fc6 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ae7f1849a3324432bee784bc4413c621218609ee",
+  "prompts": {},
+  "sessions": {
+    "s_a0b4872f270ab7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f47c94d7-228e-4328-973e-84779edc5af6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Prashant Mishra <prashantmishra@L9KXW927K6local-781.local>"
+    }
+  }
+}
