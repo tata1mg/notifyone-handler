@@ -1,0 +1,17 @@
+[project]
+name = "notifyone-handler"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "httpx[http2]==0.23.3",
+    "aiokafka==0.10.0",
+    "torpedo",
+    "commonutils",
+]
+
+[project.optional-dependencies]
+dev = []
+
+[tool.uv.sources]
+torpedo = { git = "https://github.com/tata1mg/torpedo.git", tag = "1.0.0" }
+commonutils = { git = "https://github.com/tata1mg/commonutils.git", tag = "1.0.0" }

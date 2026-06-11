@@ -20,8 +20,7 @@ RUN apt-get update && \
 
 RUN echo "Y" | apt-get install procps
 
-RUN pip install --user pipenv
-RUN pip install --upgrade pip
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Create home ubuntu service
 RUN mkdir -p /home/ubuntu/apps/$SERVICE_NAME/logs
@@ -30,8 +29,8 @@ RUN mkdir -p /home/ubuntu/apps/$SERVICE_NAME/logs
 WORKDIR /home/ubuntu/apps/$SERVICE_NAME
 
 # Copy and install requirements
-COPY Pipfile Pipfile.lock /home/ubuntu/apps/$SERVICE_NAME/
-RUN /root/.local/bin/pipenv sync --system
+COPY pyproject.toml uv.lock /home/ubuntu/apps/$SERVICE_NAME/
+RUN uv sync --frozen --no-dev
 
 # Copy code folder
 COPY . .

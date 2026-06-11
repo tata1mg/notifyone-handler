@@ -65,3 +65,4 @@ target/
 
 .DS_Store
 newrelic.ini
+.venv/

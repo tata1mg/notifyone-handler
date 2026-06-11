@@ -78,10 +78,9 @@ Based on your use case and expected load for a channel (number of notification r
     2. cd notifyone-handler
     3. touch config.json
     4. Generate actual keys and values for config.json file. Refer to config_template.json for keys.
-    5. pip isntall pipenv (if not alread installed)
-    6. python3 -m pipenv shell
-    7. python3 -m pipenv install
-    8. python3 -m app.service
+    5. pip install uv
+    6. uv sync
+    7. python3 -m app.service
 #### Docker container based deployment
 ###### Here, we pre-assume that you have got docker installed on you system, and it's up and running
     1. git clone https://github.com/tata1mg/notifyone-handler.git
