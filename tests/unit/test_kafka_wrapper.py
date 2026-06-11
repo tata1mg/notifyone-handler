@@ -3,6 +3,7 @@ Unit tests for handler KafkaWrapper.
 Stubs out commonutils/torpedo so this runs without the full pipenv install.
 """
 import asyncio
+import functools
 import importlib.util
 import os
 import json
@@ -11,6 +12,29 @@ import types
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
+
+def run_async(coro_func):
+    """Run an async test on a private event loop, leaving the ambient loop untouched.
+
+    Keeps these tests independent of pytest-sanic / pytest-asyncio loop management
+    so they cannot interfere with the session-scoped fixtures of other tests.
+    """
+    @functools.wraps(coro_func)
+    def wrapper(*args, **kwargs):
+        try:
+            prev_loop = asyncio.get_event_loop()
+        except RuntimeError:
+            prev_loop = None
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(coro_func(*args, **kwargs))
+        finally:
+            loop.close()
+            asyncio.set_event_loop(prev_loop)
+    return wrapper
+
 
 
 # ---------------------------------------------------------------------------
@@ -99,7 +123,7 @@ def _make_mock_consumer(msgs):
 # Tests
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio
+@run_async
 async def test_publish_to_kafka_sends_utf8_bytes_to_correct_topic(kafka_config):
     """publish_to_kafka sends UTF-8 bytes to correct topic."""
     with patch.object(_kafka_wrapper_mod, "AIOKafkaProducer") as MockProducer:
@@ -118,7 +142,7 @@ async def test_publish_to_kafka_sends_utf8_bytes_to_correct_topic(kafka_config):
     assert value_arg == b'{"hello": "world"}'
 
 
-@pytest.mark.asyncio
+@run_async
 async def test_subscribe_all_calls_handler_with_decoded_data(kafka_config):
     """subscribe_all calls handler.handle_event with decoded data."""
     body = json.dumps({"msg": "hello"})
@@ -143,7 +167,7 @@ async def test_subscribe_all_calls_handler_with_decoded_data(kafka_config):
     handler.handle_event.assert_called_once_with(body)
 
 
-@pytest.mark.asyncio
+@run_async
 async def test_subscribe_all_retry_then_skip_after_max_attempts(kafka_config):
     """After MAX_RETRY_ATTEMPTS failures the message is committed (skipped).
     handler.handle_event must be called exactly MAX_RETRY_ATTEMPTS (3) times."""
@@ -179,7 +203,7 @@ async def test_subscribe_all_retry_then_skip_after_max_attempts(kafka_config):
     mock_consumer.commit.assert_called_once()
 
 
-@pytest.mark.asyncio
+@run_async
 async def test_subscribe_all_seek_called_on_failure_below_threshold(kafka_config):
     """consumer.seek() is called with the correct TopicPartition and offset when
     handle_event raises and retry_count is below MAX_RETRY_ATTEMPTS."""
