@@ -1,0 +1,23 @@
+app/pubsub/kafka/kafka_wrapper.py
+  s_2d1432d0b17077::t_7927e751b277cc 4
+  s_2d1432d0b17077::t_c3e2f909874f78 59-61,68-69,82-86
+tests/unit/test_kafka_wrapper.py
+  s_2d1432d0b17077::t_7f5ad4b4a17f50 147-148,151-152,175-176,179-211
+  s_2d1432d0b17077::t_5f9aef1894b37c 92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d961bd9ad9ec9f62582830ea1bd48388c6f474a6",
+  "prompts": {},
+  "sessions": {
+    "s_2d1432d0b17077": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f5eacc05-337b-4a1b-8ce6-78a56574fb97",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Prashant Mishra <prashantmishra@L9KXW927K6local-781.local>"
+    }
+  }
+}
