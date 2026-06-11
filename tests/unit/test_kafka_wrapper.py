@@ -4,6 +4,7 @@ Stubs out commonutils/torpedo so this runs without the full pipenv install.
 """
 import asyncio
 import importlib.util
+import os
 import json
 import sys
 import types
@@ -32,7 +33,7 @@ _ensure_stub("commonutils.handlers.sqs", SQSHandler=object)
 _ensure_stub("torpedo")
 _ensure_stub("torpedo.exceptions")
 
-_HANDLER_ROOT = "/opt/1mg/open_source/notifyone/notifyone-handler"
+_HANDLER_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if _HANDLER_ROOT not in sys.path:
     sys.path.insert(0, _HANDLER_ROOT)
 
