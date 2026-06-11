@@ -7,8 +7,8 @@ from app.initialize import Initialize
 from app.services.channel_partners.get_configurations import ChannelPartners
 
 
-async def initialize_sqs_subscribers(app, loop):
-    await Initialize.initialize_sqs_subscribers()
+async def initialize_queue_subscribers(app, loop):
+    await Initialize.initialize_queue_subscribers()
 
 
 async def channel_partners_configurations(app, loop):
@@ -21,7 +21,7 @@ async def setup_channel_partners_configurations_periodic_refresh(app, loop):
 
 
 listeners = [
-    (initialize_sqs_subscribers, ListenerEventTypes.AFTER_SERVER_START.value),
+    (initialize_queue_subscribers, ListenerEventTypes.AFTER_SERVER_START.value),
     (channel_partners_configurations, ListenerEventTypes.AFTER_SERVER_START.value),
     (setup_channel_partners_configurations_periodic_refresh, ListenerEventTypes.AFTER_SERVER_START.value)
 ]

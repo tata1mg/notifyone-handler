@@ -7,6 +7,7 @@ name = "pypi"
 torpedo = {editable = true, ref = "1.0.0", git = "https://github.com/tata1mg/torpedo"}
 commonutils = {editable = true, ref = "1.0.0", git = "https://github.com/tata1mg/commonutils"}
 httpx = {extras = ["http2"], version = "0.23.3"}
+aiokafka = "==0.10.0"
 
 [dev-packages]
 

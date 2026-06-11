@@ -27,11 +27,27 @@ class Initialize:
     }
 
     @classmethod
-    async def initialize_sqs_subscribers(cls):
+    def _get_queue_backend(cls) -> str:
+        return cls.config.get("QUEUE_BACKEND", "sqs").lower()
+
+    @classmethod
+    async def initialize_queue_subscribers(cls):
         """
         Initialize only enabled subscribers here.
+        Routes to SQS or Kafka subscriber initialization based on QUEUE_BACKEND config.
         Out of all the available subscribers in the code we will enable only those subscribers that are listed in the
         service config (config.ENABLED_CHANNELS list)
+        """
+        backend = cls._get_queue_backend()
+        if backend == "kafka":
+            await cls._initialize_kafka_subscribers()
+        else:
+            await cls._initialize_sqs_subscribers()
+
+    @classmethod
+    async def _initialize_sqs_subscribers(cls):
+        """
+        Initialize SQS subscribers for each enabled channel.
         """
         enabled_channels = cls.config.get("ENABLED_CHANNELS")
         if not enabled_channels:
@@ -57,6 +73,43 @@ class Initialize:
             cls.create_subscribers(subscribers, sqs_handler, max_no_of_messages)
 
     @classmethod
+    async def _initialize_kafka_subscribers(cls):
+        """
+        Initialize Kafka subscribers for each enabled channel.
+        """
+        from app.pubsub.kafka import KafkaWrapper
+
+        enabled_channels = cls.config.get("ENABLED_CHANNELS")
+        if not enabled_channels:
+            raise Exception("Enable at least one channel")
+
+        auth_kafka = cls.config.get("KAFKA_AUTH", {})
+        sqs = cls.config.get("SQS", {})
+
+        for channel, callback in cls.sqs_event_mapping.items():
+            if channel not in enabled_channels:
+                continue
+            channel_config = sqs.get("SUBSCRIBE", {}).get(channel, {})
+            max_no_of_messages = channel_config.get("MAX_MESSAGE", 5)
+            queue_name = channel_config.get("QUEUE_NAME")
+            subscribers_count = channel_config.get("SUBSCRIBERS_COUNT", 1)
+
+            sqs_handler = callback.get("handler")()
+
+            for _ in range(subscribers_count):
+                wrapper = KafkaWrapper(config={"KAFKA": auth_kafka})
+                await wrapper.get_kafka_client(queue_name)
+                group_id = "ns-handler-{}".format(channel.lower())
+                asyncio.create_task(
+                    wrapper.subscribe_all(
+                        sqs_handler,
+                        topic_name=queue_name,
+                        group_id=group_id,
+                        max_no_of_messages=max_no_of_messages,
+                    )
+                )
+
+    @classmethod
     def create_subscribers(
         cls, subscribers: List[BaseSQSWrapper], handler: SQSHandler, max_messages: int
     ):
@@ -78,10 +131,18 @@ class Initialize:
 
     @classmethod
     def initialize_service_startup_dependencies(cls):
-        sqs = cls.config.get("SQS", {})
-        auth = cls.config.get("SQS_AUTH", {})
-        logging = sqs.get("PUBLISH", {}).get("LOGGING", {})
-        logger = SQSAioLogger({"SQS": auth, **logging})
+        backend = cls._get_queue_backend()
+        if backend == "kafka":
+            from app.commons.logging.kafka import KafkaAioLogger
+            auth_kafka = cls.config.get("KAFKA_AUTH", {})
+            sqs = cls.config.get("SQS", {})
+            logging_config = sqs.get("PUBLISH", {}).get("LOGGING", {})
+            logger = KafkaAioLogger({"KAFKA": auth_kafka, **logging_config})
+        else:
+            sqs = cls.config.get("SQS", {})
+            auth = cls.config.get("SQS_AUTH", {})
+            logging_config = sqs.get("PUBLISH", {}).get("LOGGING", {})
+            logger = SQSAioLogger({"SQS": auth, **logging_config})
 
         cls.initialize_handlers(logger)
         cls.initialize_callback_logger(logger)

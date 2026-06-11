@@ -4,6 +4,11 @@
   "PORT": 9403,
   "WORKERS": 1,
   "DEBUG": true,
+  "QUEUE_BACKEND": "sqs",
+  "KAFKA_AUTH": {
+    "BOOTSTRAP_SERVERS": "localhost:9092",
+    "MAX_RETRY_ATTEMPTS": 3
+  },
   "SQS": {
     "PUBLISH": {
       "LOGGING": {
