@@ -1,6 +1,8 @@
 import asyncio
 import logging
 
+from torpedo import CONFIG
+
 from app.constants import Channels
 from app.services.handlers.email.handler import EmailHandler
 from app.services.handlers.sms.handler import SmsHandler
@@ -13,7 +15,7 @@ logger = logging.getLogger()
 
 class ChannelPartners:
 
-    _periodic_sync_delay = 5*60
+    _periodic_sync_delay = CONFIG.config["CHANNEL_PARTNERS"]["CONFIG_SYNC_DELAY"]
     PROVIDERS_CONFIG = dict()
 
     @classmethod
